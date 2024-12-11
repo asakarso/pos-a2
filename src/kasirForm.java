@@ -53,43 +53,72 @@ public class kasirForm extends javax.swing.JFrame {
         DefaultTableModel kasirForm = (DefaultTableModel)tabelTransaksi.getModel();
         kasirForm.getDataVector().removeAllElements();
         kasirForm.fireTableDataChanged();
-        try{
+
+        try {
             Connection c = getKoneksi();
             Statement s = c.createStatement();
             String sql = "SELECT * FROM detail_transaksi";
             ResultSet r = s.executeQuery(sql);
-            
-            while(r.next()){
-                Object[] o = new Object [6];
-                o[0] = r.getString("ID_Menu");
-                
+
+            while (r.next()) {
+                String id_menu = r.getString("ID_Menu");
+                String jumlah_beli_str = r.getString("Jumlah_beli");
+
+                // Ambil data menu berdasarkan ID_Menu
+                pst = c.prepareStatement("SELECT nama_menu, jenis_menu, harga_menu FROM menu WHERE id_menu = ?");
+                pst.setString(1, id_menu);
+                ResultSet rs = pst.executeQuery();
+
                 String nama_menu = "";
                 String jenis_menu = "";
                 String harga_menu = "";
-                pst = getKoneksi().prepareStatement("SELECT nama_menu, jenis_menu, harga_menu FROM menu WHERE id_menu = ?");
-                pst.setString(1, id_menu);
-                ResultSet rs = pst.executeQuery();
 
                 if (rs.next()) {
                     nama_menu = rs.getString("nama_menu");
                     jenis_menu = rs.getString("jenis_menu");
                     harga_menu = rs.getString("harga_menu");
                 } else {
-                    JOptionPane.showMessageDialog(this, "Menu tidak ditemukan!");
-                    return; 
+                    JOptionPane.showMessageDialog(this, "Menu tidak ditemukan untuk ID_Menu: " + id_menu);
+                    continue; // Skip ke baris berikutnya jika menu tidak ditemukan
                 }
+
+                // Menghitung total harga
+                double harga = 0;
+                try {
+                    harga = Double.parseDouble(harga_menu);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Format harga tidak valid!");
+                    continue;
+                }
+
+                int jumlah_beli = 0;
+                try {
+                    jumlah_beli = Integer.parseInt(jumlah_beli_str);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Jumlah beli tidak valid!");
+                    continue;
+                }
+
+                double total_harga = harga * jumlah_beli;
+
+                // Tambahkan data ke tabel
+                Object[] o = new Object[6];
+                o[0] = id_menu;
                 o[1] = nama_menu;
                 o[2] = jenis_menu;
                 o[3] = harga_menu;
-                o[4] = r.getString("Jumlah_beli");
-                o[5] = Double.parseDouble(harga_menu)*Integer.parseInt(o[4]);
+                o[4] = jumlah_beli;
+                o[5] = total_harga;
+
                 kasirForm.addRow(o);
+
+                rs.close(); // Tutup ResultSet menu
             }
-            
+
             r.close();
             s.close();
-        } catch(SQLException e){
-            System.out.println("terjadi Error");
+        } catch(SQLException e) {
+            System.out.println("Terjadi Error: " + e.getMessage());
         }
     }
     
@@ -98,6 +127,7 @@ public class kasirForm extends javax.swing.JFrame {
         initComponents();
         pegawaiCombo();
         menuCombo();
+        loadTabel();
     }
 
     /**
