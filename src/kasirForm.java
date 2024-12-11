@@ -28,7 +28,7 @@ public class kasirForm extends javax.swing.JFrame {
             String sql = "SELECT * FROM pegawai";
             ResultSet r = s.executeQuery(sql);
             while(r.next()){
-                employeeValue.addItem(r.getNString("nama_pegawai"));
+                employeeValue.addItem(r.getString("nama_pegawai"));
             }
         } catch(SQLException e){
             System.out.println("Error Memuat Pegawai");
@@ -42,7 +42,7 @@ public class kasirForm extends javax.swing.JFrame {
             String sql = "SELECT * FROM menu";
             ResultSet r = s.executeQuery(sql);
             while(r.next()){
-                menuValue.addItem(r.getNString("nama_menu"));
+                menuValue.addItem(r.getString("nama_menu"));
             }
         } catch(SQLException e){
             System.out.println("Error Memuat Menu");
@@ -53,19 +53,22 @@ public class kasirForm extends javax.swing.JFrame {
         DefaultTableModel kasirForm = (DefaultTableModel)tabelTransaksi.getModel();
         kasirForm.getDataVector().removeAllElements();
         kasirForm.fireTableDataChanged();
+        
+        String id_trans = idTransaksi.getText().trim(); 
 
         try {
             Connection c = getKoneksi();
-            Statement s = c.createStatement();
-            String sql = "SELECT * FROM detail_transaksi";
-            ResultSet r = s.executeQuery(sql);
+            String sql = "SELECT * FROM detail_transaksi WHERE Nomor_transaksi = ?";
+            pst = c.prepareStatement(sql);
+            pst.setString(1, id_trans);  
+            ResultSet r = pst.executeQuery();
 
             while (r.next()) {
                 String id_menu = r.getString("ID_Menu");
                 String jumlah_beli_str = r.getString("Jumlah_beli");
 
-                // Ambil data menu berdasarkan ID_Menu
-                pst = c.prepareStatement("SELECT nama_menu, jenis_menu, harga_menu FROM menu WHERE id_menu = ?");
+                String queryMenu = "SELECT nama_menu, jenis_menu, harga_menu FROM menu WHERE id_menu = ?";
+                pst = c.prepareStatement(queryMenu);
                 pst.setString(1, id_menu);
                 ResultSet rs = pst.executeQuery();
 
@@ -79,10 +82,9 @@ public class kasirForm extends javax.swing.JFrame {
                     harga_menu = rs.getString("harga_menu");
                 } else {
                     JOptionPane.showMessageDialog(this, "Menu tidak ditemukan untuk ID_Menu: " + id_menu);
-                    continue; // Skip ke baris berikutnya jika menu tidak ditemukan
+                    continue;
                 }
 
-                // Menghitung total harga
                 double harga = 0;
                 try {
                     harga = Double.parseDouble(harga_menu);
@@ -101,7 +103,6 @@ public class kasirForm extends javax.swing.JFrame {
 
                 double total_harga = harga * jumlah_beli;
 
-                // Tambahkan data ke tabel
                 Object[] o = new Object[6];
                 o[0] = id_menu;
                 o[1] = nama_menu;
@@ -112,11 +113,11 @@ public class kasirForm extends javax.swing.JFrame {
 
                 kasirForm.addRow(o);
 
-                rs.close(); // Tutup ResultSet menu
+                rs.close();
             }
 
             r.close();
-            s.close();
+            pst.close();
         } catch(SQLException e) {
             System.out.println("Terjadi Error: " + e.getMessage());
         }
@@ -311,6 +312,20 @@ public class kasirForm extends javax.swing.JFrame {
 
         jButton1.setText("Lihat Riwayat Transaksi");
 
+        idTransaksi.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                idTransaksiFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                idTransaksiFocusLost(evt);
+            }
+        });
+        idTransaksi.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                idTransaksiKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -453,9 +468,8 @@ public class kasirForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(ppnLabel)
-                                .addComponent(jLabel6))
+                            .addComponent(jLabel6)
+                            .addComponent(ppnLabel)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel11)
                                 .addComponent(totalItemsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -557,10 +571,26 @@ public class kasirForm extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
             }
+            loadTabel();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
         }
     }//GEN-LAST:event_addButtonActionPerformed
+
+    private void idTransaksiFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_idTransaksiFocusLost
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_idTransaksiFocusLost
+
+    private void idTransaksiFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_idTransaksiFocusGained
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_idTransaksiFocusGained
+
+    private void idTransaksiKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idTransaksiKeyReleased
+        // TODO add your handling code here:
+        loadTabel();
+    }//GEN-LAST:event_idTransaksiKeyReleased
 
     /**
      * @param args the command line arguments
