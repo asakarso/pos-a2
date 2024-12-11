@@ -53,6 +53,14 @@ public class menuForm extends javax.swing.JFrame {
         
     }
     
+    private void clearFields() {
+        idMenu.setText("");
+        namaMenu.setText("");
+        jenisMenu.setSelectedIndex(0);
+        hargaMenu.setText("");
+        deskripsiMenu.setText("");
+    }
+    
     public menuForm() {
         initComponents();
         getKoneksi();
@@ -77,8 +85,8 @@ public class menuForm extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tableMenu = new javax.swing.JTable();
         jenisMenu = new javax.swing.JComboBox<>();
-        idMenu = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
+        idMenu = new javax.swing.JTextField();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -152,12 +160,6 @@ public class menuForm extends javax.swing.JFrame {
             }
         });
 
-        idMenu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                idMenuActionPerformed(evt);
-            }
-        });
-
         jLabel5.setText("Id Menu");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -166,7 +168,7 @@ public class menuForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(btnTambah)
@@ -194,7 +196,7 @@ public class menuForm extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(idMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(idMenu)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 615, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -239,93 +241,100 @@ public class menuForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
-//        // TODO add your handling code here:
-        try{
-            String id_menu = idMenu.getText();
-            String jenis_menu = (String)jenisMenu.getSelectedItem();
-            String nama_menu = namaMenu.getText();
-            String harga_menu = hargaMenu.getText();
-            String deskripsi_menu = deskripsiMenu.getText();
-            pst = koneksi.prepareStatement("INSERT INTO menu (id_menu,jenis_menu,nama_menu,harga_menu,deskripsi_menu)VALUES(?,?,?,?,?)");
-            pst.setString(1,id_menu);
-            pst.setString(2,jenis_menu);
-            pst.setString(3,nama_menu);
-            pst.setString(4,harga_menu);
-            pst.setString(5,deskripsi_menu);
+// TODO add your handling code here:
+        try {
+            String id_menu = idMenu.getText().trim();
+            String jenis_menu = (String) jenisMenu.getSelectedItem();
+            String nama_menu = namaMenu.getText().trim();
+            String harga_menu = hargaMenu.getText().trim();
+            String deskripsi_menu = deskripsiMenu.getText().trim();
+
+            if (id_menu.isEmpty() || nama_menu.isEmpty() || harga_menu.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Harap isi semua kolom wajib!");
+                return;
+            }
+
+            pst = getKoneksi().prepareStatement("INSERT INTO menu (id_menu, jenis_menu, nama_menu, harga_menu, deskripsi_menu) VALUES (?, ?, ?, ?, ?)");
+            pst.setString(1, id_menu);
+            pst.setString(2, jenis_menu);
+            pst.setString(3, nama_menu);
+            pst.setString(4, harga_menu);
+            pst.setString(5, deskripsi_menu);
+
             int k = pst.executeUpdate();
-            if(k==1){
-                JOptionPane.showMessageDialog(this,"Rrecord Added Successfully!");
-                idMenu.setText("");
-                namaMenu.setText("");
-                hargaMenu.setText("");
-                deskripsiMenu.setText("");
+            if (k == 1) {
+                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
             } else {
-                JOptionPane.showMessageDialog(this,"Rrecord Add Failed");
+                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
             }
             loadMenu();
-        } catch(SQLException e){
-            System.out.println("terjadi Error");
+            clearFields();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
         }
     }//GEN-LAST:event_btnTambahActionPerformed
 
     private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
-//        // TODO add your handling code here:
-        DefaultTableModel menuForm = (DefaultTableModel)tableMenu.getModel();
-        try{
-            if(tableMenu.getSelectedRowCount()==1){
-                String kodeLama = (String) menuForm.getValueAt(tableMenu.getSelectedRow(), 0);
-                String id = namaMenu.getText();
-                String judul = textBuku.getText();
-                String harga = hargaMenu.getText();
-                String deskripsi = deskripsiMenu.getText();
-                pst = koneksi.prepareStatement("UPDATE buku SET kode_buku=?, judul_buku=?, pengarang=?, penerbit=? WHERE kode_buku=?");
-                pst.setString(1,kode);
-                pst.setString(2,judul);
-                pst.setString(3,pengarang);
-                pst.setString(4,penerbit);
-                pst.setString(5,kodeLama);
-                int k = pst.executeUpdate();
-                if(k==1){
-                    JOptionPane.showMessageDialog(this,"Rrecord Updated Successfully!");
-                    namaMenu.setText(kode);
-                    textBuku.setText(judul);
-                    hargaMenu.setText(pengarang);
-                    deskripsiMenu.setText(penerbit);
-                } else {
-                    JOptionPane.showMessageDialog(this,"Rrecord Update Failed");
-                }
-                loadMenu();
+// TODO add your handling code here:
+        try {
+            String id_menu = idMenu.getText().trim();
+            String jenis_menu = (String) jenisMenu.getSelectedItem();
+            String nama_menu = namaMenu.getText().trim();
+            String harga_menu = hargaMenu.getText().trim();
+            String deskripsi_menu = deskripsiMenu.getText().trim();
+
+            if (id_menu.isEmpty() || nama_menu.isEmpty() || harga_menu.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Harap isi semua kolom wajib!");
+                return;
             }
-        } catch(SQLException e){
-            System.out.println("terjadi Error");
-        }
+
+            pst = getKoneksi().prepareStatement("UPDATE menu SET jenis_menu = ?, nama_menu = ?, harga_menu = ?, deskripsi_menu = ? WHERE id_menu = ?");
+            pst.setString(1, jenis_menu);
+            pst.setString(2, nama_menu);
+            pst.setString(3, harga_menu);
+            pst.setString(4, deskripsi_menu);
+            pst.setString(5, id_menu);
+
+            int k = pst.executeUpdate();
+            if (k == 1) {
+                JOptionPane.showMessageDialog(this, "Data berhasil diubah!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal mengubah data!");
+            }
+            loadMenu();
+            clearFields();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }    
     }//GEN-LAST:event_btnUbahActionPerformed
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
         // TODO add your handling code here:
-//        try{
-//            String kode = namaMenu.getText();
-//            String judul = textBuku.getText();
-//            String pengarang = hargaMenu.getText();
-//            String penerbit = deskripsiMenu.getText();
-//
-//            pst = koneksi.prepareStatement("DELETE FROM buku WHERE kode_buku=?");
-//            pst.setString(1,kode);
-//            
-//            int k = pst.executeUpdate();
-//            if(k==1){
-//                JOptionPane.showMessageDialog(this,"Rrecord Deteleted Successfully!");
-//                namaMenu.setText("");
-//                textBuku.setText("");
-//                hargaMenu.setText("");
-//                deskripsiMenu.setText("");
-//            } else {
-//                JOptionPane.showMessageDialog(this,"Rrecord Delete Failed");
-//            }
-//            loadBuku();
-//        } catch(SQLException e){
-//            System.out.println("terjadi Error");
-//        }
+        try {
+            String id_menu = idMenu.getText().trim();
+
+            if (id_menu.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Pilih data yang ingin dihapus!");
+                return;
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                pst = getKoneksi().prepareStatement("DELETE FROM menu WHERE id_menu = ?");
+                pst.setString(1, id_menu);
+
+                int k = pst.executeUpdate();
+                if (k == 1) {
+                    JOptionPane.showMessageDialog(this, "Data berhasil dihapus!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Gagal menghapus data!");
+                }
+                loadMenu();
+                clearFields();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
     }//GEN-LAST:event_btnHapusActionPerformed
 
     private void namaMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_namaMenuActionPerformed
@@ -355,10 +364,6 @@ public class menuForm extends javax.swing.JFrame {
     private void jenisMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jenisMenuActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jenisMenuActionPerformed
-
-    private void idMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idMenuActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_idMenuActionPerformed
 
     /**
      * @param args the command line arguments
