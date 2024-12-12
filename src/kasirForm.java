@@ -125,6 +125,11 @@ public class kasirForm extends javax.swing.JFrame {
         addButton.setText("Add");
 
         removeButton.setText("Remove");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
 
         removeAllButton.setText("Remove All");
 
@@ -376,6 +381,10 @@ public class kasirForm extends javax.swing.JFrame {
     private void buttonPayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPayActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_buttonPayActionPerformed
+
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_removeButtonActionPerformed
 
     /**
      * @param args the command line arguments
