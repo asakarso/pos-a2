@@ -14,7 +14,7 @@ public class kasirForm extends javax.swing.JFrame {
     
     public static Connection getKoneksi(){
         try {
-            String url = "jdbc:mysql://localhost/restoran";
+            String url = "jdbc:mysql://localhost/restoran1";
             String user = "root";
             String password = "";
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
@@ -150,12 +150,26 @@ public class kasirForm extends javax.swing.JFrame {
     }
     
     
-    
+//     public void resetForm() {
+//        idTransaksi.setText("");
+////        mejaValue.setText("");
+////        tanggalValue.setText("");
+////        jamValue.setText("");
+////        custValue.setText("");
+//        qtyInputValue.setText("");
+//        
+//        if (jenisValue != null) {
+//        jenisValue.setSelectedIndex(0); 
+//    }
+//          
+//        }
+
     public kasirForm() {
         initComponents();
         pegawaiCombo();
         menuCombo();
         loadTabel();
+//        resetForm();
     }
     
 
@@ -281,6 +295,11 @@ public class kasirForm extends javax.swing.JFrame {
         });
 
         removeAllButton.setText("Remove All");
+        removeAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeAllButtonActionPerformed(evt);
+            }
+        });
 
         ppnLabel.setText("PPN:");
 
@@ -775,6 +794,60 @@ public class kasirForm extends javax.swing.JFrame {
         total = total - totalDiskon;
         priceTotalValue.setText(String.valueOf(total));
     }//GEN-LAST:event_discValueKeyReleased
+
+    private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
+        // TODO add your handling code here:
+    String id_trans = idTransaksi.getText().trim();
+
+    if (id_trans.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Masukkan ID Transaksi terlebih dahulu.", "Perhatian!", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int confirm = JOptionPane.showConfirmDialog(this, 
+            "Apakah Anda yakin ingin menghapus semua data untuk ID Transaksi: " + id_trans + "?", 
+            "Konfirmasi Hapus Semua", 
+            JOptionPane.YES_NO_OPTION);
+    
+    if (confirm == JOptionPane.YES_OPTION) {
+        Connection c = getKoneksi();
+        if (c == null) {
+            JOptionPane.showMessageDialog(this, "Koneksi ke database gagal!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            String sql = "DELETE FROM detail_transaksi WHERE Nomor_transaksi = ?";
+            PreparedStatement p = c.prepareStatement(sql);
+            p.setString(1, id_trans);
+
+            int rowsAffected = p.executeUpdate();
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, 
+                        "Semua data untuk ID Transaksi: " + id_trans + " berhasil dihapus.", 
+                        "Sukses", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                
+                loadTabel(); 
+//                resetForm();
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                        "Tidak ada data ditemukan untuk ID Transaksi: " + id_trans, 
+                        "Kesalahan", 
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
+            p.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, 
+                    "Terjadi kesalahan saat menghapus data: " + e.getMessage(), 
+                    "Kesalahan", 
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    }//GEN-LAST:event_removeAllButtonActionPerformed
 
     /**
      * @param args the command line arguments

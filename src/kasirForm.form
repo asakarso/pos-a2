@@ -403,6 +403,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Remove All"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeAllButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="ppnLabel">
       <Properties>
