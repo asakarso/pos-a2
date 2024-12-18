@@ -1,4 +1,9 @@
 import java.sql.*;
+import java.text.DateFormat;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -55,6 +60,8 @@ public class kasirForm extends javax.swing.JFrame {
         kasirForm.fireTableDataChanged();
         
         String id_trans = idTransaksi.getText().trim(); 
+        
+        
 
         try {
             Connection c = getKoneksi();
@@ -62,6 +69,11 @@ public class kasirForm extends javax.swing.JFrame {
             pst = c.prepareStatement(sql);
             pst.setString(1, id_trans);  
             ResultSet r = pst.executeQuery();
+            double totalPrice = 0;
+            double totalItem = 0;
+            double totalPPN = 0;
+            double totalService = 0;
+            double total = 0;
 
             while (r.next()) {
                 String id_menu = r.getString("ID_Menu");
@@ -110,18 +122,33 @@ public class kasirForm extends javax.swing.JFrame {
                 o[3] = harga_menu;
                 o[4] = jumlah_beli;
                 o[5] = total_harga;
+                
+                totalPrice += total_harga;
+                totalItem += jumlah_beli;
+                
 
                 kasirForm.addRow(o);
-
+                
                 rs.close();
             }
 
             r.close();
             pst.close();
+            
+            totalPPN = totalPrice*0.10;
+            totalService = totalPrice*0.05;
+            total = totalPrice - (totalPPN + totalService);
+            
+            priceTotalValue.setText(String.valueOf(total));
+            subTotalValue.setText(String.valueOf(totalPrice));
+            totalPPNValue.setText(String.valueOf(totalPPN));
+            serviceTotalValue.setText(String.valueOf(totalService));
+            totalItemsValue.setText(String.valueOf(totalItem));
         } catch(SQLException e) {
             System.out.println("Terjadi Error: " + e.getMessage());
         }
     }
+    
     
     
     public kasirForm() {
@@ -130,6 +157,7 @@ public class kasirForm extends javax.swing.JFrame {
         menuCombo();
         loadTabel();
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -164,10 +192,6 @@ public class kasirForm extends javax.swing.JFrame {
         totalItemsValue = new javax.swing.JTextField();
         subTotalValue = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
-        paidValue = new javax.swing.JTextField();
-        jLabel13 = new javax.swing.JLabel();
-        balanceValue = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
         buttonProses = new javax.swing.JButton();
         totalPPNValue = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
@@ -175,22 +199,31 @@ public class kasirForm extends javax.swing.JFrame {
         serviceTotalValue = new javax.swing.JTextField();
         priceTotalValue = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
-        balanceTotalValue = new javax.swing.JTextField();
-        jLabel19 = new javax.swing.JLabel();
-        paymentMethodValue = new javax.swing.JComboBox<>();
         invoiceLabel = new javax.swing.JLabel();
         mejaValue = new javax.swing.JTextField();
         qtyInputLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         discValue = new javax.swing.JTextField();
         idTransaksi = new javax.swing.JTextField();
+        custLabel1 = new javax.swing.JLabel();
+        jenisValue = new javax.swing.JComboBox<>();
+        custLabel2 = new javax.swing.JLabel();
+        jumlahCust = new javax.swing.JTextField();
+        tanggalValue = new javax.swing.JTextField();
+        jamValue = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         jButton4.setText("jButton4");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         employeeValue.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
+        employeeValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                employeeValueActionPerformed(evt);
+            }
+        });
 
         employeeLabel.setText("Employee");
 
@@ -241,6 +274,11 @@ public class kasirForm extends javax.swing.JFrame {
         });
 
         removeButton.setText("Remove");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
 
         removeAllButton.setText("Remove All");
 
@@ -259,18 +297,15 @@ public class kasirForm extends javax.swing.JFrame {
         jLabel11.setText("Total Items");
 
         totalItemsValue.setText("0");
+        totalItemsValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                totalItemsValueActionPerformed(evt);
+            }
+        });
 
         subTotalValue.setText("0");
 
         jLabel12.setText("Sub Total");
-
-        paidValue.setText("0");
-
-        jLabel13.setText("Total Paid");
-
-        balanceValue.setText("0");
-
-        jLabel14.setText("Balance/Due");
 
         buttonProses.setText("Process");
         buttonProses.addActionListener(new java.awt.event.ActionListener() {
@@ -291,14 +326,6 @@ public class kasirForm extends javax.swing.JFrame {
 
         jLabel17.setText("Total Price");
 
-        jLabel18.setText("Total Balance");
-
-        balanceTotalValue.setText("0");
-
-        jLabel19.setText("Payment Method");
-
-        paymentMethodValue.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         invoiceLabel.setText("ID Transaksi:");
 
         mejaValue.setText("0");
@@ -311,6 +338,12 @@ public class kasirForm extends javax.swing.JFrame {
         qtyInputLabel1.setText("No Meja");
 
         jButton1.setText("Lihat Riwayat Transaksi");
+
+        discValue.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                discValueKeyReleased(evt);
+            }
+        });
 
         idTransaksi.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -326,6 +359,22 @@ public class kasirForm extends javax.swing.JFrame {
             }
         });
 
+        custLabel1.setText("Jenis Pemesanan:");
+
+        jenisValue.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dine In", "Take Away"}));
+
+        custLabel2.setText("Jml Cust");
+
+        jumlahCust.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jumlahCustActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Tanggal:");
+
+        jLabel2.setText("Jam");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -338,6 +387,10 @@ public class kasirForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(idTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(tanggalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
                         .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -347,6 +400,42 @@ public class kasirForm extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(removeAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(removeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(buttonProses)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(discLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(ppnLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(serviceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGap(18, 18, 18)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(discValue, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGap(166, 166, 166)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGap(26, 26, 26)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(totalItemsValue, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(subTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(totalPPNValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(serviceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(18, 18, 18)
+                                            .addComponent(priceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -360,69 +449,32 @@ public class kasirForm extends javax.swing.JFrame {
                                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                         .addComponent(custLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(custValue, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(custValue, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(custLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jumlahCust, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(46, 46, 46)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(qtyInputLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(qtyInputLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(qtyInputValue, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(qtyInputLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(mejaValue, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(18, 18, 18)
-                                .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(discLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(ppnLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(serviceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(discValue, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                                                .addComponent(qtyInputLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(18, 18, 18)
-                                            .addComponent(paidValue))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(paymentMethodValue, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                                .addGap(173, 173, 173)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(26, 26, 26)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(totalItemsValue, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(subTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(balanceValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(totalPPNValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(63, 63, 63)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(buttonProses)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(qtyInputValue, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(mejaValue, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(serviceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(priceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(balanceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                        .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(custLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jenisValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(15, 15, 15)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jamValue, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -434,29 +486,40 @@ public class kasirForm extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(invoiceLabel)
                             .addComponent(idTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(qtyInputLabel1)
-                                .addComponent(mejaValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(employeeValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(employeeLabel)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(employeeValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(employeeLabel)
+                            .addComponent(custLabel1)
+                            .addComponent(jenisValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(custLabel)
-                            .addComponent(custValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(27, 27, 27)
+                            .addComponent(custValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(qtyInputLabel1)
+                            .addComponent(mejaValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(custLabel2)
+                            .addComponent(jumlahCust, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(37, 37, 37)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(menuValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(menuLabel)
                             .addComponent(qtyInputLabel)
                             .addComponent(qtyInputValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(addButton))
-                        .addGap(66, 66, 66))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(15, 15, 15)
-                        .addComponent(jButton1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1)
+                            .addComponent(tanggalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jamValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -464,59 +527,42 @@ public class kasirForm extends javax.swing.JFrame {
                         .addComponent(removeButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeAllButton)))
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(ppnLabel)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel11)
-                                .addComponent(totalItemsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(serviceLabel)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel12)
-                            .addComponent(subTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(discLabel)
-                            .addComponent(jLabel10)
-                            .addComponent(jLabel14)
-                            .addComponent(balanceValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(discValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel15)
-                            .addComponent(jLabel13)
-                            .addComponent(paidValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(totalPPNValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel19)
-                            .addComponent(paymentMethodValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(serviceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(priceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(balanceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(buttonProses, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(12, 12, 12))
+                    .addComponent(jLabel6)
+                    .addComponent(ppnLabel)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel11)
+                        .addComponent(totalItemsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(serviceLabel)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel12)
+                    .addComponent(subTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(discLabel)
+                    .addComponent(jLabel10)
+                    .addComponent(discValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15)
+                    .addComponent(totalPPNValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(serviceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(priceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addComponent(buttonProses, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void custValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_custValueActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_custValueActionPerformed
@@ -527,6 +573,76 @@ public class kasirForm extends javax.swing.JFrame {
 
     private void buttonProsesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonProsesActionPerformed
         // TODO add your handling code here:
+        try {
+            String id_trans = idTransaksi.getText().trim();
+            
+//            Calendar cal = Calendar.getInstance();
+//            SimpleDateFormat sdfTanggal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+//            String tanggal = sdfTanggal.format(cal.getTime()); 
+//            
+//            SimpleDateFormat sdfWaktu = new SimpleDateFormat("HH:mm:ss");
+//            tanggalValue.setText(sdfWaktu.format(cal.getTime()));
+           
+            String tanggal = tanggalValue.getText().trim();
+            String waktu_pesan = jamValue.getText().trim();;
+//            Locale locale = new Locale("fr", "FR");
+//            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale); // Menggunakan locale Prancis
+//            waktu_pesan = dateFormat.format(new Date());
+            
+            String waktu_bayar = null;
+            String customer = custValue.getText().trim();
+            String metode = null;
+            String jenis_pesan = (String) jenisValue.getSelectedItem();
+            String no_meja = mejaValue.getText().trim();
+            String jumlah_cust = jumlahCust.getText().trim();
+            String total = priceTotalValue.getText().trim();
+            String ppn = totalPPNValue.getText().trim();
+            String service = serviceTotalValue.getText().trim();
+            String status = "Unpaid";
+            String pegawai = (String) employeeValue.getSelectedItem();
+
+            if (id_trans.isEmpty())  {
+                JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi!");
+                return;
+            } 
+            
+            if ((no_meja.equals("0")&&jenis_pesan.equals("Take Away")))  {
+                JOptionPane.showMessageDialog(this, "Harap isi No Meja!");
+                return;
+            } 
+            
+            if (jumlah_cust.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Harap isi Jumlah Customer!");
+                return;
+            }
+
+
+            pst = getKoneksi().prepareStatement("INSERT INTO transaksi (no_transaksi, tanggal_transaksi, waktu_pemesanan, waktu_pembayaran, nama_customer, metode_pembayaran, jenis_pemesanan, nomor_meja, jumlah_customer, total_transaksi, total_ppn, total_service, status_transaksi, id_pegawai) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            pst.setString(1, id_trans);
+            pst.setString(2, tanggal);
+            pst.setString(3, waktu_pesan);
+            pst.setNull(4, java.sql.Types.TIMESTAMP);
+            pst.setString(5, customer);
+            pst.setNull(6, java.sql.Types.VARCHAR);
+            pst.setString(7, jenis_pesan);
+            pst.setString(8, no_meja);
+            pst.setString(9, jumlah_cust);
+            pst.setString(10, total);
+            pst.setString(11, ppn);
+            pst.setString(12, service);
+            pst.setString(13, status);
+            pst.setString(14, pegawai);
+
+            int k = pst.executeUpdate();
+            if (k == 1) {
+                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
+            }
+            loadTabel();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
     }//GEN-LAST:event_buttonProsesActionPerformed
 
     private void menuValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuValueActionPerformed
@@ -592,6 +708,74 @@ public class kasirForm extends javax.swing.JFrame {
         loadTabel();
     }//GEN-LAST:event_idTransaksiKeyReleased
 
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = tabelTransaksi.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih baris yang akan dihapus!");
+            return;
+        }
+
+        try {
+            String id_trans = idTransaksi.getText().trim();
+            String id_menu = (String) tabelTransaksi.getValueAt(selectedRow, 0);
+
+            if (id_trans.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi terlebih dahulu!");
+                return;
+            }
+
+            Connection c = getKoneksi();
+            String sql = "DELETE FROM detail_transaksi WHERE Nomor_Transaksi = ? AND ID_Menu = ?";
+            pst = c.prepareStatement(sql);
+            pst.setString(1, id_trans);
+            pst.setString(2, id_menu);
+
+            int k = pst.executeUpdate();
+
+            if (k > 0) {
+                DefaultTableModel model = (DefaultTableModel) tabelTransaksi.getModel();
+                model.removeRow(selectedRow);
+
+                JOptionPane.showMessageDialog(this, "Item berhasil dihapus dari transaksi!");
+
+                loadTabel();
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menghapus item!");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_removeButtonActionPerformed
+
+    private void employeeValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeValueActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_employeeValueActionPerformed
+
+    private void jumlahCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jumlahCustActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jumlahCustActionPerformed
+
+    private void totalItemsValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalItemsValueActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_totalItemsValueActionPerformed
+
+    private void discValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discValueKeyReleased
+        // TODO add your handling code here:
+        int diskon;
+        if(discValue.getText().trim().equals("")){
+            diskon = 0;
+        } else {
+            diskon = Integer.parseInt(discValue.getText().trim());
+        }
+        
+        double total = Double.parseDouble(priceTotalValue.getText().trim());
+        double totalDiskon = total*(diskon/100.0);
+        total = total - totalDiskon;
+        priceTotalValue.setText(String.valueOf(total));
+    }//GEN-LAST:event_discValueKeyReleased
+
     /**
      * @param args the command line arguments
      */
@@ -629,10 +813,10 @@ public class kasirForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
-    private javax.swing.JTextField balanceTotalValue;
-    private javax.swing.JTextField balanceValue;
     private javax.swing.JButton buttonProses;
     private javax.swing.JLabel custLabel;
+    private javax.swing.JLabel custLabel1;
+    private javax.swing.JLabel custLabel2;
     private javax.swing.JTextField custValue;
     private javax.swing.JLabel discLabel;
     private javax.swing.JTextField discValue;
@@ -642,24 +826,23 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JLabel invoiceLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton4;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jamValue;
+    private javax.swing.JComboBox<String> jenisValue;
+    private javax.swing.JTextField jumlahCust;
     private javax.swing.JTextField mejaValue;
     private javax.swing.JLabel menuLabel;
     private javax.swing.JComboBox<String> menuValue;
-    private javax.swing.JTextField paidValue;
-    private javax.swing.JComboBox<String> paymentMethodValue;
     private javax.swing.JLabel ppnLabel;
     private javax.swing.JTextField priceTotalValue;
     private javax.swing.JLabel qtyInputLabel;
@@ -671,6 +854,7 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JTextField serviceTotalValue;
     private javax.swing.JTextField subTotalValue;
     private javax.swing.JTable tabelTransaksi;
+    private javax.swing.JTextField tanggalValue;
     private javax.swing.JTextField totalItemsValue;
     private javax.swing.JTextField totalPPNValue;
     // End of variables declaration//GEN-END:variables

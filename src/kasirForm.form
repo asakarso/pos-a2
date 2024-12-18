@@ -30,7 +30,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
@@ -38,6 +38,10 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="idTransaksi" min="-2" pref="71" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="tanggalValue" min="-2" pref="71" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
                       <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
@@ -48,6 +52,54 @@
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="removeAllButton" max="32767" attributes="0"/>
                                   <Component id="removeButton" min="-2" pref="91" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                              <Component id="buttonProses" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="discLabel" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
+                                      <Component id="ppnLabel" alignment="0" min="-2" pref="44" max="-2" attributes="0"/>
+                                      <Component id="serviceLabel" alignment="0" min="-2" pref="44" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="jLabel7" alignment="0" min="-2" pref="22" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                              <Component id="jLabel6" max="32767" attributes="0"/>
+                                              <Component id="discValue" pref="0" max="32767" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabel10" min="-2" pref="10" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace min="-2" pref="166" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="jLabel11" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
+                                              <Component id="jLabel12" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
+                                              <Component id="jLabel15" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="totalItemsValue" alignment="0" min="-2" pref="71" max="-2" attributes="0"/>
+                                              <Component id="subTotalValue" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
+                                              <Component id="totalPPNValue" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                      <Group type="102" attributes="0">
+                                          <Component id="jLabel16" min="-2" pref="77" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="serviceTotalValue" min="-2" pref="105" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="jLabel17" min="-2" pref="77" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="priceTotalValue" min="-2" pref="105" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
                               </Group>
                           </Group>
                           <Group type="102" attributes="0">
@@ -67,88 +119,38 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="custValue" min="-2" pref="165" max="-2" attributes="0"/>
                                   </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="custLabel2" min="-2" pref="71" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jumlahCust" min="-2" pref="165" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                               <EmptySpace min="46" pref="46" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="qtyInputLabel" min="-2" pref="55" max="-2" attributes="0"/>
+                                      <Component id="qtyInputLabel1" min="-2" pref="109" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="qtyInputValue" min="-2" pref="34" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="qtyInputLabel1" min="-2" pref="55" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mejaValue" min="-2" pref="34" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="addButton" min="-2" pref="104" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="discLabel" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
-                                          <Component id="ppnLabel" alignment="0" min="-2" pref="44" max="-2" attributes="0"/>
-                                          <Component id="serviceLabel" alignment="0" min="-2" pref="44" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabel7" alignment="0" min="-2" pref="22" max="-2" attributes="0"/>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                                  <Component id="jLabel6" max="32767" attributes="0"/>
-                                                  <Component id="discValue" pref="0" max="32767" attributes="0"/>
-                                              </Group>
+                                          <Group type="102" attributes="0">
+                                              <Component id="qtyInputLabel" min="-2" pref="55" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="jLabel10" min="-2" pref="10" max="-2" attributes="0"/>
+                                              <Component id="qtyInputValue" min="-2" pref="34" max="-2" attributes="0"/>
                                           </Group>
-                                      </Group>
-                                  </Group>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jLabel13" min="-2" pref="69" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="paidValue" max="32767" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jLabel19" min="-2" pref="96" max="-2" attributes="0"/>
-                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                          <Component id="paymentMethodValue" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                              </Group>
-                              <EmptySpace min="-2" pref="173" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel11" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
-                                  <Component id="jLabel12" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
-                                  <Component id="jLabel14" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
-                                  <Component id="jLabel15" alignment="0" min="-2" pref="69" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="totalItemsValue" alignment="0" min="-2" pref="71" max="-2" attributes="0"/>
-                                  <Component id="subTotalValue" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
-                                  <Component id="balanceValue" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
-                                  <Component id="totalPPNValue" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="63" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="buttonProses" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabel16" min="-2" pref="77" max="-2" attributes="0"/>
-                                          <Component id="jLabel17" min="-2" pref="77" max="-2" attributes="0"/>
-                                          <Component id="jLabel18" min="-2" pref="77" max="-2" attributes="0"/>
+                                          <Component id="mejaValue" min="-2" pref="34" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="serviceTotalValue" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
-                                          <Component id="priceTotalValue" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
-                                          <Component id="balanceTotalValue" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="addButton" min="-2" pref="104" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="custLabel1" min="-2" pref="101" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="jenisValue" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
+                              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                              <Component id="jLabel2" min="-2" pref="46" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="jamValue" min="-2" pref="71" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -167,23 +169,26 @@
                           <Component id="invoiceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="idTransaksi" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="26" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="qtyInputLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="mejaValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="employeeValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="employeeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                      <EmptySpace type="separate" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="employeeValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="employeeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="custLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jenisValue" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="custLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="custValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="qtyInputLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="mejaValue" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="custLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jumlahCust" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="menuValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="menuLabel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -191,11 +196,20 @@
                           <Component id="qtyInputValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="addButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="66" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
-                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="tanggalValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jamValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -207,66 +221,43 @@
                       <Component id="removeAllButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
+              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="ppnLabel" min="-2" max="-2" attributes="0"/>
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="totalItemsValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="serviceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="subTotalValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="discLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="balanceValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="discValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="paidValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="totalPPNValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel19" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="paymentMethodValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel16" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="serviceTotalValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel17" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="priceTotalValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel18" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="balanceTotalValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="buttonProses" min="-2" pref="22" max="-2" attributes="0"/>
+                  <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="ppnLabel" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                      <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="totalItemsValue" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="serviceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="subTotalValue" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="discLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="discValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="totalPPNValue" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel16" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
+                  <Component id="serviceTotalValue" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel17" alignment="3" min="-2" pref="24" max="-2" attributes="0"/>
+                  <Component id="priceTotalValue" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+              <Component id="buttonProses" min="-2" pref="22" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -278,6 +269,9 @@
           <Connection code="new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] {})" type="code"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="employeeValueActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JComboBox&lt;&gt;()"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -401,6 +395,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Remove"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="removeAllButton">
       <Properties>
@@ -446,6 +443,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="0"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="totalItemsValueActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="subTotalValue">
       <Properties>
@@ -455,26 +455,6 @@
     <Component class="javax.swing.JLabel" name="jLabel12">
       <Properties>
         <Property name="text" type="java.lang.String" value="Sub Total"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="paidValue">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel13">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Total Paid"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="balanceValue">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel14">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Balance/Due"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="buttonProses">
@@ -515,36 +495,6 @@
         <Property name="text" type="java.lang.String" value="Total Price"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel18">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Total Balance"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="balanceTotalValue">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="0"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel19">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Payment Method"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="paymentMethodValue">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="4">
-            <StringItem index="0" value="Item 1"/>
-            <StringItem index="1" value="Item 2"/>
-            <StringItem index="2" value="Item 3"/>
-            <StringItem index="3" value="Item 4"/>
-          </StringArray>
-        </Property>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-      </AuxValues>
-    </Component>
     <Component class="javax.swing.JLabel" name="invoiceLabel">
       <Properties>
         <Property name="text" type="java.lang.String" value="ID Transaksi:"/>
@@ -569,6 +519,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="discValue">
+      <Events>
+        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="discValueKeyReleased"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="idTransaksi">
       <Events>
@@ -576,6 +529,45 @@
         <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="idTransaksiFocusLost"/>
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="idTransaksiKeyReleased"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="custLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Jenis Pemesanan:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="jenisValue">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;Dine In&quot;, &quot;Take Away&quot;})" type="code"/>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="custLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Jml Cust"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jumlahCust">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jumlahCustActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JTextField" name="tanggalValue">
+    </Component>
+    <Component class="javax.swing.JTextField" name="jamValue">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Tanggal:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Jam"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
