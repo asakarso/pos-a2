@@ -1,3 +1,7 @@
+import java.sql.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -12,8 +16,80 @@ public class riwayatTransaksi extends javax.swing.JFrame {
     /**
      * Creates new form riwayatTransaksi
      */
+    static Connection koneksi;
+    static PreparedStatement pst;
+    
+    public static Connection getKoneksi(){
+        try {
+            String url = "jdbc:mysql://localhost/restoran";
+            String user = "root";
+            String password = "";
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+            koneksi = DriverManager.getConnection(url, user, password);
+        } catch (SQLException t){
+            System.out.println("Error Membuat Koneksi");
+            
+        }
+        return koneksi;
+    }
+    
+    private void loadTabel(){
+        DefaultTableModel kasirForm = (DefaultTableModel)tabelRiwayat.getModel();
+        kasirForm.getDataVector().removeAllElements();
+        kasirForm.fireTableDataChanged();
+
+        try {
+            Connection c = getKoneksi();
+            String sql = "SELECT * FROM transaksi";
+            pst = c.prepareStatement(sql);
+            ResultSet r = pst.executeQuery();
+
+            while (r.next()) {
+                
+                String id_transaksi = "";
+                String tanggal = "";
+                String waktu_pesan = "";
+                String waktu_bayar = "";
+                String customer = "";
+                String metode = "";
+                String jenis = "";
+                String jumlah_cust = "";
+                String total_harga = "";
+                String ppn = "";
+                String service = "";
+                String no_meja = "";
+                String pegawai = "";
+                
+                Object[] o = new Object[14];
+                o[0] = r.getString("no_transaksi");
+                o[1] = r.getString("tanggal_transaksi");
+                o[2] = r.getString("waktu_pemesanan");
+                o[3] = ("waktu_pembayaran");
+                o[4] = r.getString("nama_customer");
+                o[5] = ("metode_pembayaran");
+                o[6] = r.getString("jenis_pemesanan");
+                o[7] = r.getString("jumlah_customer");
+                o[8] = r.getString("total_transaksi");
+                o[9] = r.getString("total_ppn");
+                o[10] = r.getString("total_service");
+                o[11] = r.getString("nomor_meja");
+                o[12] = r.getString("status_transaksi");
+                o[13] = r.getString("id_pegawai");
+                
+                kasirForm.addRow(o);
+                
+            }
+
+            r.close();
+            pst.close();
+        } catch(SQLException e) {
+            System.out.println("Terjadi Error: " + e.getMessage());
+        }
+    }
+    
     public riwayatTransaksi() {
         initComponents();
+        loadTabel();
     }
 
     /**
@@ -29,6 +105,7 @@ public class riwayatTransaksi extends javax.swing.JFrame {
         tabelRiwayat = new javax.swing.JTable();
         buttonUbah = new javax.swing.JButton();
         buttonPrint = new javax.swing.JButton();
+        buttonHapus = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -59,6 +136,13 @@ public class riwayatTransaksi extends javax.swing.JFrame {
             }
         });
 
+        buttonHapus.setText("Hapus");
+        buttonHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonHapusActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -69,6 +153,8 @@ public class riwayatTransaksi extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1375, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(buttonUbah)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(buttonHapus)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(buttonPrint)))
                 .addContainerGap(475, Short.MAX_VALUE))
@@ -81,7 +167,8 @@ public class riwayatTransaksi extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonUbah)
-                    .addComponent(buttonPrint))
+                    .addComponent(buttonPrint)
+                    .addComponent(buttonHapus))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
 
@@ -95,6 +182,10 @@ public class riwayatTransaksi extends javax.swing.JFrame {
     private void buttonPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrintActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_buttonPrintActionPerformed
+
+    private void buttonHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonHapusActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonHapusActionPerformed
 
     /**
      * @param args the command line arguments
@@ -132,6 +223,7 @@ public class riwayatTransaksi extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonHapus;
     private javax.swing.JButton buttonPrint;
     private javax.swing.JButton buttonUbah;
     private javax.swing.JScrollPane jScrollPane1;
