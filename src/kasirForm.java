@@ -849,10 +849,6 @@ public class kasirForm extends javax.swing.JFrame {
 
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
-    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_removeButtonActionPerformed
-
     /**
      * @param args the command line arguments
      */
