@@ -14,7 +14,7 @@ public class kasirForm extends javax.swing.JFrame {
     
     public static Connection getKoneksi(){
         try {
-            String url = "jdbc:mysql://localhost/restoran1";
+            String url = "jdbc:mysql://localhost/restoran";
             String user = "root";
             String password = "";
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
