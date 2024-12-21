@@ -147,6 +147,43 @@ public class kasirForm extends javax.swing.JFrame {
             System.out.println("Terjadi Error: " + e.getMessage());
         }
     }
+    
+    public void loadRiwayat(){
+        DefaultTableModel kasirForm = (DefaultTableModel)tabelRiwayat.getModel();
+        kasirForm.getDataVector().removeAllElements();
+        kasirForm.fireTableDataChanged();
+        try{
+            Connection c = getKoneksi();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM transaksi";
+            ResultSet r = s.executeQuery(sql);
+            while(r.next()){
+                Object[] o = new Object [14];
+                o[0] = r.getInt("no_transaksi");
+                o[1] = r.getDate("tanggal_transaksi");
+                o[2] = r.getTime("waktu_pemesanan");
+                o[3] = "";
+                o[4] = r.getString("nama_customer");
+                o[5] = "";
+                o[6] = r.getString("jenis_pemesanan");
+                o[7] = r.getInt("jumlah_customer");
+                o[8] = r.getDouble("total_transaksi");
+                o[9] = r.getDouble("total_ppn");
+                o[10] = r.getDouble("total_service");
+                o[11] = r.getInt("nomor_meja");
+                o[12] = r.getString("status_transaksi");
+                o[13] = r.getInt("id_pegawai");
+                kasirForm.addRow(o);
+            }
+            
+            r.close();
+            s.close();
+        } catch(SQLException e){
+            e.printStackTrace(); 
+            System.out.println("Terjadi error saat memuat data: " + e.getMessage());
+        }
+        
+    }  
 
     public void resetForm() {
         idTransaksi.setText("");
@@ -176,6 +213,7 @@ public class kasirForm extends javax.swing.JFrame {
         pegawaiCombo();
         menuCombo();
         loadTabel();
+        loadRiwayat();
         resetForm();
     }
     
@@ -247,6 +285,7 @@ public class kasirForm extends javax.swing.JFrame {
         tabelRiwayat = new javax.swing.JTable();
         buttonUbahRiwayat = new javax.swing.JButton();
         buttonPrint = new javax.swing.JButton();
+        buttonHapusRiwayat = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
 
         jButton4.setText("jButton4");
@@ -658,6 +697,13 @@ public class kasirForm extends javax.swing.JFrame {
             }
         });
 
+        buttonHapusRiwayat.setText("Hapus");
+        buttonHapusRiwayat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonHapusRiwayatActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -668,9 +714,11 @@ public class kasirForm extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1375, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(buttonUbahRiwayat)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonHapusRiwayat)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(buttonPrint)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(165, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -680,7 +728,8 @@ public class kasirForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonUbahRiwayat)
-                    .addComponent(buttonPrint))
+                    .addComponent(buttonPrint)
+                    .addComponent(buttonHapusRiwayat))
                 .addContainerGap(368, Short.MAX_VALUE))
         );
 
@@ -703,7 +752,7 @@ public class kasirForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1546, Short.MAX_VALUE)
+            .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1546, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -720,7 +769,70 @@ public class kasirForm extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonPrintActionPerformed
 
     private void buttonUbahRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUbahRiwayatActionPerformed
+     int selectedRow = tabelRiwayat.getSelectedRow();
+        int selectedColumn = tabelRiwayat.getSelectedColumn();
 
+        if (selectedRow == -1 || selectedColumn == -1) {
+           JOptionPane.showMessageDialog(this, "Pilih baris dan kolom yang ingin diubah.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+           return;
+        }
+
+        if (selectedColumn == 0) {
+           JOptionPane.showMessageDialog(this, "Kolom Nomor Transaksi tidak dapat diubah.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+           return;
+        }
+
+        int nomorTransaksi = (int) tabelRiwayat.getValueAt(selectedRow, 0);
+        String columnName = tabelRiwayat.getColumnName(selectedColumn);
+
+
+        String newValue = JOptionPane.showInputDialog(this, "Masukkan nilai baru untuk " + columnName + ":", tabelRiwayat.getValueAt(selectedRow, selectedColumn));
+
+        if (newValue == null) {
+           JOptionPane.showMessageDialog(this, "Proses perubahan dibatalkan.", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+           return;
+        }
+
+        try {
+            Connection c = getKoneksi();
+
+            String[] dbColumns = {"nomor_transaksi", "tanggal_transaksi", "waktu_pemesanan", "waktu_pembayaran", "nama_customer", 
+                                   "metode_pembayaran", "jenis_pemesanan", "jumlah_customer", "total_transaksi", "total_ppn", 
+                                   "total_service", "nomor_meja", "status_transaksi", "id_pegawai"};
+
+            String dbColumnName = dbColumns[selectedColumn];
+
+            String sql = "UPDATE transaksi SET " + dbColumnName + " = ? WHERE nomor_transaksi = ?";
+            PreparedStatement ps = c.prepareStatement(sql);
+
+            if (selectedColumn == 1) {
+                ps.setDate(1, java.sql.Date.valueOf(newValue)); 
+            } else if (selectedColumn == 2 || selectedColumn == 3) {
+                ps.setTime(1, java.sql.Time.valueOf(newValue)); 
+            } else if (selectedColumn == 7 || selectedColumn == 11 || selectedColumn == 13) {
+                ps.setInt(1, Integer.parseInt(newValue)); 
+            } else if (selectedColumn == 8 || selectedColumn == 9 || selectedColumn == 10) {
+                ps.setDouble(1, Double.parseDouble(newValue)); 
+            } else {
+                ps.setString(1, newValue);
+            }
+
+            ps.setInt(2, nomorTransaksi);
+
+            int updatedRows = ps.executeUpdate();
+            if (updatedRows > 0) {
+                JOptionPane.showMessageDialog(this, "Data berhasil diubah.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Data gagal diubah.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            ps.close();
+            c.close();
+
+            loadRiwayat();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_buttonUbahRiwayatActionPerformed
 
     private void idTransaksiKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idTransaksiKeyReleased
@@ -999,6 +1111,11 @@ public class kasirForm extends javax.swing.JFrame {
     private void jumlahCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jumlahCustActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jumlahCustActionPerformed
+
+    private void buttonHapusRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonHapusRiwayatActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_buttonHapusRiwayatActionPerformed
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -1034,6 +1151,7 @@ public class kasirForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
+    private javax.swing.JButton buttonHapusRiwayat;
     private javax.swing.JButton buttonPrint;
     private javax.swing.JButton buttonProses;
     private javax.swing.JButton buttonUbahRiwayat;
