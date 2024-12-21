@@ -184,8 +184,43 @@ public class kasirForm extends javax.swing.JFrame {
         }
         
     }  
+    
+    public void loadMenu(){
+        DefaultTableModel menuForm = (DefaultTableModel)tableMenu.getModel();
+        menuForm.getDataVector().removeAllElements();
+        menuForm.fireTableDataChanged();
+        try{
+            Connection c = getKoneksi();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM menu";
+            ResultSet r = s.executeQuery(sql);
+            while(r.next()){
+                Object[] o = new Object [5];
+                o[0] = r.getString("id_menu");
+                o[1] = r.getString("nama_menu");
+                o[2] = r.getString("jenis_menu");
+                o[3] = r.getString("harga_menu");
+                o[4] = r.getString("deskripsi_menu");
+                menuForm.addRow(o);
+            }
+            
+            r.close();
+            s.close();
+        } catch(SQLException e){
+            System.out.println("terjadi Error");
+        }
+        
+    }
+    
+    private void clearFields() {
+        idMenu.setText("");
+        namaMenu.setText("");
+        jenisMenu.setSelectedIndex(0);
+        hargaMenu.setText("");
+        deskripsiMenu.setText("");
+    }
 
-    public void resetForm() {
+    public void resetFormKasir() {
         idTransaksi.setText("");
         mejaValue.setText("0");
         jamValue.setText("");
@@ -214,7 +249,8 @@ public class kasirForm extends javax.swing.JFrame {
         menuCombo();
         loadTabel();
         loadRiwayat();
-        resetForm();
+        loadMenu();
+        resetFormKasir();
     }
     
     
@@ -287,6 +323,21 @@ public class kasirForm extends javax.swing.JFrame {
         buttonPrint = new javax.swing.JButton();
         buttonHapusRiwayat = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tableMenu = new javax.swing.JTable();
+        jenisMenu = new javax.swing.JComboBox<>();
+        idMenu = new javax.swing.JTextField();
+        namaMenu = new javax.swing.JTextField();
+        hargaMenu = new javax.swing.JTextField();
+        deskripsiMenu = new javax.swing.JTextField();
+        btnUbah = new javax.swing.JButton();
+        btnHapus = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        btnTambah = new javax.swing.JButton();
 
         jButton4.setText("jButton4");
 
@@ -735,15 +786,136 @@ public class kasirForm extends javax.swing.JFrame {
 
         jTabbedPane2.addTab("RIWAYAT TRANSAKSI", jPanel2);
 
+        tableMenu.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID Menu", "Nama Menu", "Jenis Menu", "Harga", "Deskripsi"
+            }
+        ));
+        tableMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableMenuMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tableMenu);
+
+        jenisMenu.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Signature", "Add On", "Drink"}));
+        jenisMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jenisMenuActionPerformed(evt);
+            }
+        });
+
+        namaMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                namaMenuActionPerformed(evt);
+            }
+        });
+
+        btnUbah.setText("Ubah");
+        btnUbah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUbahActionPerformed(evt);
+            }
+        });
+
+        btnHapus.setText("Hapus");
+        btnHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Id Menu");
+
+        jLabel3.setText("Nama Menu");
+
+        jLabel4.setText("Jenis");
+
+        jLabel8.setText("Harga");
+
+        jLabel9.setText("Deskripsi");
+
+        btnTambah.setText("Tambah");
+        btnTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTambahActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1546, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(221, 221, 221)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(btnTambah)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnUbah)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnHapus))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(namaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jenisMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hargaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(deskripsiMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(idMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(37, 37, 37)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 851, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(205, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 688, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(idMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(namaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jenisMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(hargaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(deskripsiMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(27, 27, 27)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnTambah)
+                            .addComponent(btnUbah)
+                            .addComponent(btnHapus)))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(348, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("MENU", jPanel3);
@@ -1089,7 +1261,7 @@ public class kasirForm extends javax.swing.JFrame {
             int k = pst.executeUpdate();
             if (k == 1) {
                 JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
-                resetForm();
+                resetFormKasir();
             } else {
                 JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
             }
@@ -1116,6 +1288,130 @@ public class kasirForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         
     }//GEN-LAST:event_buttonHapusRiwayatActionPerformed
+
+    private void tableMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMenuMouseClicked
+        // TODO add your handling code here:
+
+        DefaultTableModel menuForm = (DefaultTableModel)tableMenu.getModel();
+
+        String id = menuForm.getValueAt(tableMenu.getSelectedRow(), 0).toString();
+        String nama = menuForm.getValueAt(tableMenu.getSelectedRow(), 1).toString();
+        String jenis = menuForm.getValueAt(tableMenu.getSelectedRow(), 2).toString();
+        String harga = menuForm.getValueAt(tableMenu.getSelectedRow(), 3).toString();
+        String deskripsi = menuForm.getValueAt(tableMenu.getSelectedRow(), 4).toString();
+
+        idMenu.setText(id);
+        namaMenu.setText(nama);
+        jenisMenu.setSelectedItem(jenis);
+        hargaMenu.setText(harga);
+        deskripsiMenu.setText(deskripsi);
+
+    }//GEN-LAST:event_tableMenuMouseClicked
+
+    private void jenisMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jenisMenuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jenisMenuActionPerformed
+
+    private void namaMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_namaMenuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_namaMenuActionPerformed
+
+    private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
+        // TODO add your handling code here:
+        try {
+            String id_menu = idMenu.getText().trim();
+            String jenis_menu = (String) jenisMenu.getSelectedItem();
+            String nama_menu = namaMenu.getText().trim();
+            String harga_menu = hargaMenu.getText().trim();
+            String deskripsi_menu = deskripsiMenu.getText().trim();
+
+            if (id_menu.isEmpty() || nama_menu.isEmpty() || harga_menu.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Harap isi semua kolom wajib!");
+                return;
+            }
+
+            pst = getKoneksi().prepareStatement("UPDATE menu SET jenis_menu = ?, nama_menu = ?, harga_menu = ?, deskripsi_menu = ? WHERE id_menu = ?");
+            pst.setString(1, jenis_menu);
+            pst.setString(2, nama_menu);
+            pst.setString(3, harga_menu);
+            pst.setString(4, deskripsi_menu);
+            pst.setString(5, id_menu);
+
+            int k = pst.executeUpdate();
+            if (k == 1) {
+                JOptionPane.showMessageDialog(this, "Data berhasil diubah!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal mengubah data!");
+            }
+            loadMenu();
+            clearFields();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnUbahActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+        // TODO add your handling code here:
+        try {
+            String id_menu = idMenu.getText().trim();
+
+            if (id_menu.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Pilih data yang ingin dihapus!");
+                return;
+            }
+
+            int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                pst = getKoneksi().prepareStatement("DELETE FROM menu WHERE id_menu = ?");
+                pst.setString(1, id_menu);
+
+                int k = pst.executeUpdate();
+                if (k == 1) {
+                    JOptionPane.showMessageDialog(this, "Data berhasil dihapus!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Gagal menghapus data!");
+                }
+                loadMenu();
+                clearFields();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
+        // TODO add your handling code here:
+        try {
+            String id_menu = idMenu.getText().trim();
+            String jenis_menu = (String) jenisMenu.getSelectedItem();
+            String nama_menu = namaMenu.getText().trim();
+            String harga_menu = hargaMenu.getText().trim();
+            String deskripsi_menu = deskripsiMenu.getText().trim();
+
+            if (id_menu.isEmpty() || nama_menu.isEmpty() || harga_menu.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Harap isi semua kolom wajib!");
+                return;
+            }
+
+            pst = getKoneksi().prepareStatement("INSERT INTO menu (id_menu, jenis_menu, nama_menu, harga_menu, deskripsi_menu) VALUES (?, ?, ?, ?, ?)");
+            pst.setString(1, id_menu);
+            pst.setString(2, jenis_menu);
+            pst.setString(3, nama_menu);
+            pst.setString(4, harga_menu);
+            pst.setString(5, deskripsi_menu);
+
+            int k = pst.executeUpdate();
+            if (k == 1) {
+                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
+            }
+            loadMenu();
+            clearFields();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnTambahActionPerformed
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -1151,6 +1447,9 @@ public class kasirForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
+    private javax.swing.JButton btnHapus;
+    private javax.swing.JButton btnTambah;
+    private javax.swing.JButton btnUbah;
     private javax.swing.JButton buttonHapusRiwayat;
     private javax.swing.JButton buttonPrint;
     private javax.swing.JButton buttonProses;
@@ -1159,10 +1458,13 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JLabel custLabel1;
     private javax.swing.JLabel custLabel2;
     private javax.swing.JTextField custValue;
+    private javax.swing.JTextField deskripsiMenu;
     private javax.swing.JLabel discLabel;
     private javax.swing.JTextField discValue;
     private javax.swing.JLabel employeeLabel;
     private javax.swing.JComboBox<String> employeeValue;
+    private javax.swing.JTextField hargaMenu;
+    private javax.swing.JTextField idMenu;
     private javax.swing.JTextField idTransaksi;
     private javax.swing.JLabel invoiceLabel;
     private javax.swing.JButton jButton4;
@@ -1174,21 +1476,29 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTextField jamValue;
+    private javax.swing.JComboBox<String> jenisMenu;
     private javax.swing.JComboBox<String> jenisValue;
     private javax.swing.JTextField jumlahCust;
     private javax.swing.JTextField mejaValue;
     private javax.swing.JLabel menuLabel;
     private javax.swing.JComboBox<String> menuValue;
+    private javax.swing.JTextField namaMenu;
     private java.awt.PopupMenu popupMenu1;
     private java.awt.PopupMenu popupMenu2;
     private java.awt.PopupMenu popupMenu3;
@@ -1206,6 +1516,7 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JTextField subTotalValue;
     private javax.swing.JTable tabelRiwayat;
     private javax.swing.JTable tabelTransaksi;
+    private javax.swing.JTable tableMenu;
     private com.toedter.calendar.JDateChooser tanggalValue;
     private javax.swing.JTextField totalItemsValue;
     private javax.swing.JTextField totalPPNValue;
