@@ -3,6 +3,8 @@ import javax.swing.*;
 import javax.swing.table.*;  
 import java.text.SimpleDateFormat;  
 import com.toedter.calendar.JDateChooser;  
+import java.util.Date;
+import java.text.ParseException;
 
 /**
  *
@@ -15,28 +17,53 @@ public class Absensi extends javax.swing.JFrame {
         DefaultTableModel tabel = new DefaultTableModel();
         tabel.addColumn("Id Absensi");
         tabel.addColumn("Id Pegawai");
+        tabel.addColumn("Nama Pegawai");
+        tabel.addColumn("Jabatan");
         tabel.addColumn("Tanggal");
         tabel.addColumn("Status");
-
+        tabel.addColumn("Gender");
+        tabel.addColumn("No HP");
 
         try {
-            // Membuat koneksi ke database
             java.sql.Connection conn = (java.sql.Connection) absensi.Koneksi.koneksiDB();
             String sql = "SELECT * FROM absen_pegawai";
             java.sql.PreparedStatement pst = conn.prepareStatement(sql);
             java.sql.ResultSet rs = pst.executeQuery();
 
-            // Mengisi tabel dengan data dari database
             while (rs.next()) {
+                String id_pegawai = rs.getString("id_pegawai");
+                String sqlPegawai = "SELECT * FROM pegawai WHERE id_pegawai = ?";
+                java.sql.PreparedStatement p = conn.prepareStatement(sqlPegawai);
+                p.setString(1, id_pegawai);
+                ResultSet r = p.executeQuery();  // Menggunakan p.executeQuery()
+
+                String nama_pegawai = "";
+                String jabatan = "";
+                String gender = "";
+                String no_hp = "";
+
+                if (r.next()) {
+                    nama_pegawai = r.getString("nama_pegawai");
+                    jabatan = r.getString("jabatan");
+                    gender = r.getString("gender");
+                    no_hp = r.getString("no_hp");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Menu tidak ditemukan untuk ID Pegawai: " + id_pegawai);
+                    continue;  // Melanjutkan ke iterasi berikutnya jika pegawai tidak ditemukan
+                }
+
                 tabel.addRow(new Object[]{
-                    rs.getString("id_absen"), // Kolom 1
-                    rs.getString("id_pegawai"), // Kolom 2
-                    rs.getString("tanggal"), // Kolom 3
-                    rs.getString("status"), // Kolom 6
+                    rs.getString("id_absen"), 
+                    rs.getString("id_pegawai"), 
+                    nama_pegawai,
+                    jabatan,
+                    rs.getString("tanggal"), 
+                    rs.getString("status"), 
+                    gender,
+                    no_hp,
                 });
             }
 
-            // Menampilkan data ke dalam jTable
             jTable.setModel(tabel);
 
         } catch (Exception e) {
@@ -45,10 +72,11 @@ public class Absensi extends javax.swing.JFrame {
         }
     }
 
+
     public Absensi() {
-        initComponents(); // Memuat komponen GUI
-        tgl = new JDateChooser(); // Inisialisasi JDateChooser
-        add(tgl); // Menambahkan ke GUI (jika belum ditambahkan)
+        initComponents(); 
+        tgl = new JDateChooser(); 
+        add(tgl); 
         tampil_data();
     }
 
@@ -163,6 +191,16 @@ public class Absensi extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableMouseClicked(evt);
+            }
+        });
+        jTable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTableKeyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable);
 
         status.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hadir", "Cuti", "Sakit", "Alpa" }));
@@ -182,7 +220,7 @@ public class Absensi extends javax.swing.JFrame {
 
         jLabel9.setText("Gender");
 
-        gender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Laki-laki", "Perempuan" }));
+        gender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Laki-Laki", "Perempuan" }));
 
         tanggal.setText("Tanggal");
 
@@ -221,8 +259,7 @@ public class Absensi extends javax.swing.JFrame {
                                                 .addComponent(kalender, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addGroup(layout.createSequentialGroup()
                                             .addGap(34, 34, 34)
-                                            .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(13, 13, 13))))
+                                            .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addGroup(layout.createSequentialGroup()
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -498,6 +535,45 @@ public class Absensi extends javax.swing.JFrame {
     private void cariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cariActionPerformed
+
+    private void jTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableKeyReleased
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jTableKeyReleased
+
+    private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = jTable.getSelectedRow();
+        if (selectedRow != -1){
+            String id_absensi = jTable.getValueAt(selectedRow, 0).toString();
+            String id_pegawai = jTable.getValueAt(selectedRow, 1).toString();
+            String status_pegawai = jTable.getValueAt(selectedRow, 5).toString();
+            String no_hp = jTable.getValueAt(selectedRow, 7).toString();
+            String tanggal_absensi = jTable.getValueAt(selectedRow, 4).toString();
+            String gender_pegawai = jTable.getValueAt(selectedRow, 6).toString();
+            
+            
+            SimpleDateFormat sdfTanggal = new SimpleDateFormat("yyyy-MM-dd"); 
+            
+            try {
+                // Mengonversi string tanggal ke objek Date
+                Date date = sdfTanggal.parse(tanggal_absensi);
+
+                // Set objek Date ke kalender
+                kalender.setDate(date);
+
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(this, "Format tanggal tidak sesuai!");
+                e.printStackTrace();
+            }
+            
+            idAbsensi.setText(id_absensi);
+            idPegawai.setSelectedItem(id_pegawai);
+            status.setSelectedItem(status_pegawai);
+            noHp.setText(no_hp);
+            gender.setSelectedItem(gender_pegawai);
+        }
+    }//GEN-LAST:event_jTableMouseClicked
     
 
     /**
