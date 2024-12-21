@@ -149,7 +149,41 @@ public class kasirForm extends javax.swing.JFrame {
         }
     }
     
-    
+    public void loadRiwayat(){
+        DefaultTableModel kasirForm = (DefaultTableModel)tabelRiwayat.getModel();
+        kasirForm.getDataVector().removeAllElements();
+        kasirForm.fireTableDataChanged();
+        try{
+            Connection c = getKoneksi();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM transaksi";
+            ResultSet r = s.executeQuery(sql);
+            while(r.next()){
+                Object[] o = new Object [14];
+                o[0] = r.getInt("nomor_transaksi");
+                o[1] = r.getDate("tanggal_transaksi");
+                o[2] = r.getTime("waktu_pemesanan");
+                o[3] = r.getTime("waktu_pembayaran");
+                o[4] = r.getString("nama_customer");
+                o[5] = r.getString("metode_pembayaran");
+                o[6] = r.getString("jenis_pemesanan");
+                o[7] = r.getInt("jumlah_customer");
+                o[8] = r.getDouble("total_transaksi");
+                o[9] = r.getDouble("total_ppn");
+                o[10] = r.getDouble("total_service");
+                o[11] = r.getInt("nomor_meja");
+                o[12] = r.getString("status_transaksi");
+                o[13] = r.getInt("id_pegawai");
+                kasirForm.addRow(o);
+            }
+            
+            r.close();
+            s.close();
+        } catch(SQLException e){
+            System.out.println("terjadi Error");
+        }
+        
+    }  
 //     public void resetForm() {
 //        idTransaksi.setText("");
 ////        mejaValue.setText("");
@@ -169,8 +203,10 @@ public class kasirForm extends javax.swing.JFrame {
         pegawaiCombo();
         menuCombo();
         loadTabel();
+        loadRiwayat();
 //        resetForm();
     }
+    
     
 
     /**
@@ -232,8 +268,9 @@ public class kasirForm extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tabelRiwayat = new javax.swing.JTable();
-        buttonUbah = new javax.swing.JButton();
+        buttonUbahRiwayat = new javax.swing.JButton();
         buttonPrint = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
 
         jButton4.setText("jButton4");
 
@@ -417,11 +454,6 @@ public class kasirForm extends javax.swing.JFrame {
                     .addContainerGap()
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(invoiceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(idTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(buttonProses)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
@@ -463,6 +495,10 @@ public class kasirForm extends javax.swing.JFrame {
                             .addGap(67, 67, 67))
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(invoiceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(idTransaksi, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 855, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -506,7 +542,7 @@ public class kasirForm extends javax.swing.JFrame {
                                             .addComponent(jenisValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGap(15, 15, 15)
                                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addContainerGap(423, Short.MAX_VALUE)))))
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -611,10 +647,10 @@ public class kasirForm extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(tabelRiwayat);
 
-        buttonUbah.setText("Ubah");
-        buttonUbah.addActionListener(new java.awt.event.ActionListener() {
+        buttonUbahRiwayat.setText("Ubah");
+        buttonUbahRiwayat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonUbahActionPerformed(evt);
+                buttonUbahRiwayatActionPerformed(evt);
             }
         });
 
@@ -634,7 +670,7 @@ public class kasirForm extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1375, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(buttonUbah)
+                        .addComponent(buttonUbahRiwayat)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(buttonPrint)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -646,12 +682,25 @@ public class kasirForm extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonUbah)
+                    .addComponent(buttonUbahRiwayat)
                     .addComponent(buttonPrint))
                 .addContainerGap(368, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("RIWAYAT TRANSAKSI", jPanel2);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1387, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 688, Short.MAX_VALUE)
+        );
+
+        jTabbedPane2.addTab("MENU", jPanel3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -668,151 +717,97 @@ public class kasirForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    private void custValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_custValueActionPerformed
+
+    private void buttonPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrintActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_custValueActionPerformed
+    }//GEN-LAST:event_buttonPrintActionPerformed
 
-    private void qtyInputValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qtyInputValueActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_qtyInputValueActionPerformed
+    private void buttonUbahRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUbahRiwayatActionPerformed
 
-    private void buttonProsesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonProsesActionPerformed
-        // TODO add your handling code here:
-        try {
-            String id_trans = idTransaksi.getText().trim();
-            
-//            Calendar cal = Calendar.getInstance();
-//            SimpleDateFormat sdfTanggal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
-//            String tanggal = sdfTanggal.format(cal.getTime()); 
-//            
-//            SimpleDateFormat sdfWaktu = new SimpleDateFormat("HH:mm:ss");
-//            tanggalValue.setText(sdfWaktu.format(cal.getTime()));
-           
-            String tanggal = tanggalValue.getText().trim();
-            String waktu_pesan = jamValue.getText().trim();;
-//            Locale locale = new Locale("fr", "FR");
-//            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale); // Menggunakan locale Prancis
-//            waktu_pesan = dateFormat.format(new Date());
-            
-            String waktu_bayar = null;
-            String customer = custValue.getText().trim();
-            String metode = null;
-            String jenis_pesan = (String) jenisValue.getSelectedItem();
-            String no_meja = mejaValue.getText().trim();
-            String jumlah_cust = jumlahCust.getText().trim();
-            String total = priceTotalValue.getText().trim();
-            String ppn = totalPPNValue.getText().trim();
-            String service = serviceTotalValue.getText().trim();
-            String status = "Unpaid";
-            String pegawai = (String) employeeValue.getSelectedItem();
-
-            if (id_trans.isEmpty())  {
-                JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi!");
-                return;
-            } 
-            
-            if ((no_meja.equals("0")&&jenis_pesan.equals("Take Away")))  {
-                JOptionPane.showMessageDialog(this, "Harap isi No Meja!");
-                return;
-            } 
-            
-            if (jumlah_cust.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Harap isi Jumlah Customer!");
-                return;
-            }
-
-
-            pst = getKoneksi().prepareStatement("INSERT INTO transaksi (no_transaksi, tanggal_transaksi, waktu_pemesanan, waktu_pembayaran, nama_customer, metode_pembayaran, jenis_pemesanan, nomor_meja, jumlah_customer, total_transaksi, total_ppn, total_service, status_transaksi, id_pegawai) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            pst.setString(1, id_trans);
-            pst.setString(2, tanggal);
-            pst.setString(3, waktu_pesan);
-            pst.setNull(4, java.sql.Types.TIMESTAMP);
-            pst.setString(5, customer);
-            pst.setNull(6, java.sql.Types.VARCHAR);
-            pst.setString(7, jenis_pesan);
-            pst.setString(8, no_meja);
-            pst.setString(9, jumlah_cust);
-            pst.setString(10, total);
-            pst.setString(11, ppn);
-            pst.setString(12, service);
-            pst.setString(13, status);
-            pst.setString(14, pegawai);
-
-            int k = pst.executeUpdate();
-            if (k == 1) {
-                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
-            }
-            loadTabel();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
-        }
-    }//GEN-LAST:event_buttonProsesActionPerformed
-
-    private void menuValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuValueActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_menuValueActionPerformed
-
-    private void mejaValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mejaValueActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mejaValueActionPerformed
-
-    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        // TODO add your handling code here:
-         try {
-            String id_trans = idTransaksi.getText().trim();
-            String nama_menu = (String) menuValue.getSelectedItem();
-            String jumlah_item = qtyInputValue.getText().trim();
-
-            if (jumlah_item.equals("0")||id_trans.isEmpty())  {
-                JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi dan jumlah item menu!");
-                return;
-            }
-            
-            String id_menu = "";
-            pst = getKoneksi().prepareStatement("SELECT id_menu FROM menu WHERE nama_menu = ?");
-            pst.setString(1, nama_menu);
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                id_menu = rs.getString("id_menu");
-            } else {
-                JOptionPane.showMessageDialog(this, "Menu tidak ditemukan!");
-                return; 
-            }
-
-            pst = getKoneksi().prepareStatement("INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Jumlah_Beli) VALUES (?, ?, ?)");
-            pst.setString(1, id_trans);
-            pst.setString(2, id_menu);
-            pst.setString(3, jumlah_item);
-
-            int k = pst.executeUpdate();
-            if (k == 1) {
-                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
-            }
-            loadTabel();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
-        }
-    }//GEN-LAST:event_addButtonActionPerformed
-
-    private void idTransaksiFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_idTransaksiFocusLost
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_idTransaksiFocusLost
-
-    private void idTransaksiFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_idTransaksiFocusGained
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_idTransaksiFocusGained
+    }//GEN-LAST:event_buttonUbahRiwayatActionPerformed
 
     private void idTransaksiKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idTransaksiKeyReleased
         // TODO add your handling code here:
         loadTabel();
     }//GEN-LAST:event_idTransaksiKeyReleased
+
+    private void idTransaksiFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_idTransaksiFocusLost
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_idTransaksiFocusLost
+
+    private void idTransaksiFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_idTransaksiFocusGained
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_idTransaksiFocusGained
+
+    private void discValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discValueKeyReleased
+        // TODO add your handling code here:
+        int diskon;
+        if(discValue.getText().trim().equals("")){
+            diskon = 0;
+        } else {
+            diskon = Integer.parseInt(discValue.getText().trim());
+        }
+
+        double total = Double.parseDouble(priceTotalValue.getText().trim());
+        double totalDiskon = total*(diskon/100.0);
+        total = total - totalDiskon;
+        priceTotalValue.setText(String.valueOf(total));
+    }//GEN-LAST:event_discValueKeyReleased
+
+    private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
+        // TODO add your handling code here:
+        String id_trans = idTransaksi.getText().trim();
+
+        if (id_trans.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Masukkan ID Transaksi terlebih dahulu.", "Perhatian!", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Apakah Anda yakin ingin menghapus semua data untuk ID Transaksi: " + id_trans + "?",
+            "Konfirmasi Hapus Semua",
+            JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            Connection c = getKoneksi();
+            if (c == null) {
+                JOptionPane.showMessageDialog(this, "Koneksi ke database gagal!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                String sql = "DELETE FROM detail_transaksi WHERE Nomor_transaksi = ?";
+                PreparedStatement p = c.prepareStatement(sql);
+                p.setString(1, id_trans);
+
+                int rowsAffected = p.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(this,
+                        "Semua data untuk ID Transaksi: " + id_trans + " berhasil dihapus.",
+                        "Sukses",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                    loadTabel();
+                    //                resetForm();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                        "Tidak ada data ditemukan untuk ID Transaksi: " + id_trans,
+                        "Kesalahan",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+
+                p.close();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this,
+                    "Terjadi kesalahan saat menghapus data: " + e.getMessage(),
+                    "Kesalahan",
+                    JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         // TODO add your handling code here:
@@ -855,95 +850,147 @@ public class kasirForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_removeButtonActionPerformed
 
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        // TODO add your handling code here:
+        try {
+            String id_trans = idTransaksi.getText().trim();
+            String nama_menu = (String) menuValue.getSelectedItem();
+            String jumlah_item = qtyInputValue.getText().trim();
+
+            if (jumlah_item.equals("0")||id_trans.isEmpty())  {
+                JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi dan jumlah item menu!");
+                return;
+            }
+
+            String id_menu = "";
+            pst = getKoneksi().prepareStatement("SELECT id_menu FROM menu WHERE nama_menu = ?");
+            pst.setString(1, nama_menu);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                id_menu = rs.getString("id_menu");
+            } else {
+                JOptionPane.showMessageDialog(this, "Menu tidak ditemukan!");
+                return;
+            }
+
+            pst = getKoneksi().prepareStatement("INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Jumlah_Beli) VALUES (?, ?, ?)");
+            pst.setString(1, id_trans);
+            pst.setString(2, id_menu);
+            pst.setString(3, jumlah_item);
+
+            int k = pst.executeUpdate();
+            if (k == 1) {
+                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
+            }
+            loadTabel();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_addButtonActionPerformed
+
+    private void mejaValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mejaValueActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mejaValueActionPerformed
+
+    private void qtyInputValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qtyInputValueActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_qtyInputValueActionPerformed
+
+    private void menuValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuValueActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_menuValueActionPerformed
+
+    private void custValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_custValueActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_custValueActionPerformed
+
+    private void buttonProsesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonProsesActionPerformed
+        // TODO add your handling code here:
+        try {
+            String id_trans = idTransaksi.getText().trim();
+
+            //            Calendar cal = Calendar.getInstance();
+            //            SimpleDateFormat sdfTanggal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            //            String tanggal = sdfTanggal.format(cal.getTime());
+            //
+            //            SimpleDateFormat sdfWaktu = new SimpleDateFormat("HH:mm:ss");
+            //            tanggalValue.setText(sdfWaktu.format(cal.getTime()));
+
+            String tanggal = tanggalValue.getText().trim();
+            String waktu_pesan = jamValue.getText().trim();;
+            //            Locale locale = new Locale("fr", "FR");
+            //            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale); // Menggunakan locale Prancis
+            //            waktu_pesan = dateFormat.format(new Date());
+
+            String waktu_bayar = null;
+            String customer = custValue.getText().trim();
+            String metode = null;
+            String jenis_pesan = (String) jenisValue.getSelectedItem();
+            String no_meja = mejaValue.getText().trim();
+            String jumlah_cust = jumlahCust.getText().trim();
+            String total = priceTotalValue.getText().trim();
+            String ppn = totalPPNValue.getText().trim();
+            String service = serviceTotalValue.getText().trim();
+            String status = "Unpaid";
+            String pegawai = (String) employeeValue.getSelectedItem();
+
+            if (id_trans.isEmpty())  {
+                JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi!");
+                return;
+            }
+
+            if ((no_meja.equals("0")&&jenis_pesan.equals("Take Away")))  {
+                JOptionPane.showMessageDialog(this, "Harap isi No Meja!");
+                return;
+            }
+
+            if (jumlah_cust.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Harap isi Jumlah Customer!");
+                return;
+            }
+
+            pst = getKoneksi().prepareStatement("INSERT INTO transaksi (no_transaksi, tanggal_transaksi, waktu_pemesanan, waktu_pembayaran, nama_customer, metode_pembayaran, jenis_pemesanan, nomor_meja, jumlah_customer, total_transaksi, total_ppn, total_service, status_transaksi, id_pegawai) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            pst.setString(1, id_trans);
+            pst.setString(2, tanggal);
+            pst.setString(3, waktu_pesan);
+            pst.setNull(4, java.sql.Types.TIMESTAMP);
+            pst.setString(5, customer);
+            pst.setNull(6, java.sql.Types.VARCHAR);
+            pst.setString(7, jenis_pesan);
+            pst.setString(8, no_meja);
+            pst.setString(9, jumlah_cust);
+            pst.setString(10, total);
+            pst.setString(11, ppn);
+            pst.setString(12, service);
+            pst.setString(13, status);
+            pst.setString(14, pegawai);
+
+            int k = pst.executeUpdate();
+            if (k == 1) {
+                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
+            }
+            loadTabel();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_buttonProsesActionPerformed
+
     private void employeeValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeValueActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_employeeValueActionPerformed
-
-    private void jumlahCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jumlahCustActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jumlahCustActionPerformed
 
     private void totalItemsValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalItemsValueActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_totalItemsValueActionPerformed
 
-    private void discValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_discValueKeyReleased
+    private void jumlahCustActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jumlahCustActionPerformed
         // TODO add your handling code here:
-        int diskon;
-        if(discValue.getText().trim().equals("")){
-            diskon = 0;
-        } else {
-            diskon = Integer.parseInt(discValue.getText().trim());
-        }
-        
-        double total = Double.parseDouble(priceTotalValue.getText().trim());
-        double totalDiskon = total*(diskon/100.0);
-        total = total - totalDiskon;
-        priceTotalValue.setText(String.valueOf(total));
-    }//GEN-LAST:event_discValueKeyReleased
-
-    private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
-        // TODO add your handling code here:
-    String id_trans = idTransaksi.getText().trim();
-
-    if (id_trans.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Masukkan ID Transaksi terlebih dahulu.", "Perhatian!", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    int confirm = JOptionPane.showConfirmDialog(this, 
-            "Apakah Anda yakin ingin menghapus semua data untuk ID Transaksi: " + id_trans + "?", 
-            "Konfirmasi Hapus Semua", 
-            JOptionPane.YES_NO_OPTION);
+    }//GEN-LAST:event_jumlahCustActionPerformed
     
-    if (confirm == JOptionPane.YES_OPTION) {
-        Connection c = getKoneksi();
-        if (c == null) {
-            JOptionPane.showMessageDialog(this, "Koneksi ke database gagal!", "Kesalahan", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            String sql = "DELETE FROM detail_transaksi WHERE Nomor_transaksi = ?";
-            PreparedStatement p = c.prepareStatement(sql);
-            p.setString(1, id_trans);
-
-            int rowsAffected = p.executeUpdate();
-            if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(this, 
-                        "Semua data untuk ID Transaksi: " + id_trans + " berhasil dihapus.", 
-                        "Sukses", 
-                        JOptionPane.INFORMATION_MESSAGE);
-                
-                loadTabel(); 
-//                resetForm();
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                        "Tidak ada data ditemukan untuk ID Transaksi: " + id_trans, 
-                        "Kesalahan", 
-                        JOptionPane.ERROR_MESSAGE);
-            }
-
-            p.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, 
-                    "Terjadi kesalahan saat menghapus data: " + e.getMessage(), 
-                    "Kesalahan", 
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }
-
-    }//GEN-LAST:event_removeAllButtonActionPerformed
-
-    private void buttonUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUbahActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_buttonUbahActionPerformed
-
-    private void buttonPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrintActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_buttonPrintActionPerformed
-
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -980,7 +1027,7 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JButton addButton;
     private javax.swing.JButton buttonPrint;
     private javax.swing.JButton buttonProses;
-    private javax.swing.JButton buttonUbah;
+    private javax.swing.JButton buttonUbahRiwayat;
     private javax.swing.JLabel custLabel;
     private javax.swing.JLabel custLabel1;
     private javax.swing.JLabel custLabel2;
@@ -1004,6 +1051,7 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
