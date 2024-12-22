@@ -71,13 +71,21 @@ public class Absensi extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
         }
     }
-
+    private void clearFields() {
+        idAbsensi.setText("");
+        idPegawai.setSelectedIndex(0);
+        status.setSelectedIndex(0);
+        noHp.setText("");
+        kalender.setDate(null);
+        gender.setSelectedIndex(0);
+    }
 
     public Absensi() {
         initComponents(); 
         tgl = new JDateChooser(); 
         add(tgl); 
         tampil_data();
+        clearFields();
     }
 
 
@@ -375,6 +383,7 @@ public class Absensi extends javax.swing.JFrame {
             pst.executeUpdate();
             JOptionPane.showMessageDialog(null, "Berhasil disimpan");
             tampil_data();
+            clearFields();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Gagal disimpan");
             System.out.println(e.getMessage());
@@ -436,6 +445,7 @@ public class Absensi extends javax.swing.JFrame {
 
             JOptionPane.showMessageDialog(null, "Data berhasil di Koreksi");
             tampil_data();
+            clearFields();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Proses Edit data Gagal");
             System.out.println(e.getMessage());
@@ -465,6 +475,7 @@ public class Absensi extends javax.swing.JFrame {
           }
           // Panggil method untuk menampilkan data (jika ada)
           tampil_data();
+          clearFields();
 
           // Tutup PreparedStatement dan koneksi
           pst.close();
@@ -479,10 +490,7 @@ public class Absensi extends javax.swing.JFrame {
     }//GEN-LAST:event_tb_hapusActionPerformed
 
     private void tb_batalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tb_batalActionPerformed
-        idAbsensi.setText("");
-        idPegawai.setSelectedItem("");
-        status.setSelectedItem("");    
-        kalender.setDate(null);       
+        clearFields();      
     }//GEN-LAST:event_tb_batalActionPerformed
 
     private void noHpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noHpActionPerformed
