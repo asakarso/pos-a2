@@ -457,6 +457,71 @@ public class kasirForm extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tabelTransaksi);
 
+        addButton.setText("Add");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+
+        removeButton.setText("Remove");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
+
+        removeAllButton.setText("Remove All");
+        removeAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeAllButtonActionPerformed(evt);
+            }
+        });
+
+        ppnLabel.setText("PPN:");
+
+        jLabel6.setText("10%");
+
+        jLabel7.setText("5%");
+
+        serviceLabel.setText("Service:");
+
+        discLabel.setText("Discount:");
+
+        jLabel10.setText("%");
+
+        jLabel11.setText("Total Items");
+
+        totalItemsValue.setText("0");
+        totalItemsValue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                totalItemsValueActionPerformed(evt);
+            }
+        });
+
+        subTotalValue.setText("0");
+
+        jLabel12.setText("Sub Total");
+
+        buttonProses.setText("Process");
+        buttonProses.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonProsesActionPerformed(evt);
+            }
+        });
+
+        totalPPNValue.setText("0");
+
+        jLabel15.setText("Total PPN");
+
+        jLabel16.setText("Total Service");
+
+        serviceTotalValue.setText("0");
+
+        priceTotalValue.setText("0");
+
+        jLabel17.setText("Total Price");
+
         invoiceLabel.setText("ID Transaksi:");
 
         mejaValue.setText("0");
@@ -1337,7 +1402,38 @@ public class kasirForm extends javax.swing.JFrame {
 
     private void buttonHapusRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonHapusRiwayatActionPerformed
         // TODO add your handling code here:
-        
+        int selectedRow = tabelRiwayat.getSelectedRow();
+    
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus!");
+            return;
+        }
+
+        String id_transaksi = tabelRiwayat.getValueAt(selectedRow, 0).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this, 
+                "Apakah Anda yakin ingin menghapus transaksi dengan ID: " + id_transaksi + "?", 
+                "Konfirmasi Penghapusan", 
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                Connection c = getKoneksi();
+                String sql = "DELETE FROM transaksi WHERE no_transaksi = ?";
+                PreparedStatement pst = c.prepareStatement(sql);
+                pst.setString(1, id_transaksi);
+
+                int result = pst.executeUpdate();
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(this, "Transaksi berhasil dihapus!");
+                    loadRiwayat(); 
+                } else {
+                    JOptionPane.showMessageDialog(this, "Transaksi gagal dihapus!");
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+            }
+        }
     }//GEN-LAST:event_buttonHapusRiwayatActionPerformed
 
     private void tableMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMenuMouseClicked
