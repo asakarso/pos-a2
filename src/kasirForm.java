@@ -1,3 +1,19 @@
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.LineSeparator;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import javax.swing.*;
@@ -9,6 +25,349 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 
 public class kasirForm extends javax.swing.JFrame {
+    
+    
+    
+    public static void createPDF(int id){
+        int id_transaksi = id;
+
+        String tanggal = "";
+        String waktu_pesan = "";
+        String nama_customer = "";
+        String jenis_pesan = "";
+        String no_meja = "";
+        String jumlah_cust = "";
+        String total = "";
+        String ppn = "";
+        String service = "";
+        String pegawai = "";
+        String id_pegawai = "";
+        String waktu_bayar = "";
+        String metode_bayar = "";
+        String jumlah_bayar = "";
+        String sub_total = "";
+      
+      
+        try {
+
+            String sql = "SELECT * FROM transaksi WHERE no_transaksi = ?";
+            PreparedStatement ps = koneksi.prepareStatement(sql);
+            ps.setInt(1, id_transaksi); 
+            ResultSet rs = ps.executeQuery();
+            
+
+            if (rs.next()) {
+                tanggal = rs.getString("tanggal_transaksi");
+                waktu_pesan = rs.getString("waktu_pemesanan");
+                nama_customer = rs.getString("nama_customer");
+                jenis_pesan = rs.getString("jenis_pemesanan");
+                no_meja = rs.getString("nomor_meja");
+                jumlah_cust = rs.getString("jumlah_customer");
+                total = rs.getString("total_transaksi");
+                ppn = rs.getString("total_ppn");
+                service = rs.getString("total_service");
+                id_pegawai = rs.getString("id_pegawai");
+                sub_total = rs.getString("sub_total");
+ 
+                } else {
+                    System.out.println("Transaksi dengan ID " + id_transaksi + " tidak ditemukan (load data).");
+                }
+
+            
+            rs.close();
+            ps.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+        
+        try {
+
+            String sql = "SELECT nama_pegawai FROM pegawai WHERE id_pegawai= ?";
+            PreparedStatement ps = koneksi.prepareStatement(sql);
+            ps.setString(1, id_pegawai); 
+            ResultSet rs = ps.executeQuery();
+            
+
+            if (rs.next()) {
+                pegawai = rs.getString("nama_pegawai");
+            } else {
+                System.out.println("Pegawai dengan ID " + id_pegawai + " tidak ditemukan (load nama pegawai).");
+            }
+
+            
+            rs.close();
+            ps.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+        
+        try {
+
+            String sql = "SELECT * FROM pembayaran WHERE no_transaksi= ?";
+            PreparedStatement ps = koneksi.prepareStatement(sql);
+            ps.setInt(1, id_transaksi); 
+            ResultSet rs = ps.executeQuery();
+            
+
+            if (rs.next()) {
+                waktu_bayar = rs.getString("waktu_pembayaran");
+                metode_bayar = rs.getString("metode_pembayaran");
+                jumlah_bayar = rs.getString("jumlah_pembayaran");
+            } else {
+                System.out.println("Transaksi dengan ID " + id_transaksi + " tidak ditemukan (load pembayaran).");
+            }
+
+            
+            rs.close();
+            ps.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
+      
+      
+        Document document = new Document();
+        try{
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("D:\\Asa\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf"));
+            document.open();
+
+            com.itextpdf.text.Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
+            com.itextpdf.text.Font bold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, BaseColor.BLACK);
+
+            Paragraph namaRestoran = new Paragraph("MIE AYAM BANG JAGO", boldFont);
+            Paragraph tagLine = new Paragraph("\"Mie Ayam Premium, Rasa Juara!\"");
+            Paragraph daerah = new Paragraph("SEMINYAK");
+            Paragraph alamat = new Paragraph("Jl. Menteng Raya No. 45, Jakarta Pusat");
+            Paragraph kontak = new Paragraph("(021)123-987");
+            Paragraph meja = new Paragraph("MEJA: " + no_meja, boldFont);
+            Chunk customer = new Chunk("Nama Pelanggan: " + nama_customer);
+            Chunk jmlCust = new Chunk("Jumlah Customer: " + jumlah_cust);
+            Chunk kasir = new Chunk("Karyawan: " + pegawai);
+            Paragraph noTrans = new Paragraph("No Transaksi: " + id_transaksi);
+            Chunk waktu = new Chunk(tanggal + "   " + waktu_pesan);
+
+            Paragraph jenisPesan = new Paragraph(jenis_pesan.toString().toUpperCase(), boldFont);
+
+            Paragraph subTotal = new Paragraph("SUBTOTAL: " + sub_total);
+            Paragraph totalPPN = new Paragraph("PPN (10%): " + ppn);
+            Paragraph totalService = new Paragraph("Service Tax (5%): " + service);
+
+            Paragraph totalHarga = new Paragraph("Total: "+total, FontFactory.getFont(FontFactory.HELVETICA, 14, BaseColor.BLACK));
+
+            Paragraph metode = new Paragraph(metode_bayar + ": " + jumlah_bayar);
+            Paragraph kembalian = new Paragraph("Kembalian: " + (Float.toString(Float.parseFloat(total)-Float.parseFloat(jumlah_bayar))));
+
+
+            Paragraph closedBill = new Paragraph("Closed Bill");
+            Paragraph jamBayar = new Paragraph(waktu_bayar);
+        
+         
+            namaRestoran.setAlignment(Element.ALIGN_CENTER);
+            tagLine.setAlignment(Element.ALIGN_CENTER);
+            daerah.setAlignment(Element.ALIGN_CENTER);
+            alamat.setAlignment(Element.ALIGN_CENTER);
+            kontak.setAlignment(Element.ALIGN_CENTER);
+            meja.setAlignment(Element.ALIGN_CENTER);
+            jenisPesan.setAlignment(Element.ALIGN_CENTER);
+            noTrans.setAlignment(Element.ALIGN_RIGHT);
+            closedBill.setAlignment(Element.ALIGN_CENTER);
+            jamBayar.setAlignment(Element.ALIGN_CENTER);
+         
+        
+            PdfPCell cell1 = new PdfPCell(new Phrase(customer));
+            cell1.setBorder(PdfPCell.NO_BORDER);
+
+            PdfPCell cell2 = new PdfPCell(new Phrase(kasir));
+            cell2.setBorder(PdfPCell.NO_BORDER);
+            cell2.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+            PdfPCell cell3 = new PdfPCell(new Phrase(jmlCust));
+            cell3.setBorder(PdfPCell.NO_BORDER);
+
+            PdfPCell cell4 = new PdfPCell(new Phrase(waktu));
+            cell4.setBorder(PdfPCell.NO_BORDER);
+            cell4.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+
+            PdfPTable table = new PdfPTable(2);
+            table.setWidthPercentage(100); 
+            table.addCell(cell1); 
+            table.addCell(cell2);
+            table.addCell(cell3);
+            table.addCell(cell4);
+
+            PdfPCell sel1 = new PdfPCell(new Phrase("Menu", bold));
+            sel1.setBorder(PdfPCell.NO_BORDER);
+            sel1.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+            PdfPCell sel2 = new PdfPCell(new Phrase("Harga", bold));
+            sel2.setBorder(PdfPCell.NO_BORDER);
+            sel2.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+            PdfPCell sel3 = new PdfPCell(new Phrase("Qty", bold));
+            sel3.setBorder(PdfPCell.NO_BORDER);
+            sel3.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+            PdfPCell sel4 = new PdfPCell(new Phrase("Total", bold));
+            sel4.setBorder(PdfPCell.NO_BORDER);
+            sel4.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+            PdfPTable detail = new PdfPTable(4);
+            detail.setWidthPercentage(100); 
+            detail.addCell(sel1);
+            detail.addCell(sel2);
+            detail.addCell(sel3);
+            detail.addCell(sel4);
+         
+            LineSeparator garis = new LineSeparator();
+            garis.setLineWidth(0.5f);
+            garis.setLineColor(BaseColor.GRAY );
+            kontak.setSpacingAfter(10f);
+            meja.setSpacingBefore(10f);
+            jenisPesan.setSpacingBefore(10f);
+            detail.setSpacingBefore(10f);
+            detail.setSpacingAfter(10f);
+            closedBill.setSpacingBefore(10f);
+
+            document.add(namaRestoran);
+            document.add(tagLine);
+            document.add(daerah);
+            document.add(alamat);
+            document.add(kontak);
+
+            document.add(garis);
+
+            if(jenis_pesan.trim().equalsIgnoreCase("Dine In")){
+                document.add(meja);
+            }
+
+            document.add(noTrans);
+            document.add(table);
+            document.add(jenisPesan);
+         
+            //        database
+            try {
+
+               String sql = "SELECT * FROM detail_transaksi WHERE Nomor_Transaksi = ?";
+               PreparedStatement ps = koneksi.prepareStatement(sql);
+               ps.setInt(1, id_transaksi); 
+               ResultSet rs = ps.executeQuery();
+
+
+               while (rs.next()) {
+                   String id_menu = rs.getString("ID_Menu");
+                   String qty = rs.getString("Jumlah_Beli");
+
+                   String sqlMenu = "SELECT nama_menu, harga_menu FROM menu WHERE id_menu = ?";
+                   PreparedStatement p = koneksi.prepareStatement(sqlMenu);
+                   p.setString(1, id_menu); 
+                   ResultSet r = p.executeQuery();
+
+                   String menu;
+                   String harga;
+
+
+
+                   if (r.next()) {
+                       menu = r.getString("nama_menu");
+                       harga = r.getString("harga_menu");
+                       Float sum = Float.parseFloat(harga) * Float.parseFloat(qty);
+                       String totalQty = Float.toString(sum);
+
+                       PdfPCell cellMenu = new PdfPCell(new Phrase(menu));
+                       cellMenu.setBorder(PdfPCell.NO_BORDER);
+                       cellMenu.setHorizontalAlignment(Element.ALIGN_CENTER);
+                       cellMenu.setPadding(5f); 
+
+                       PdfPCell cellHarga = new PdfPCell(new Phrase(harga));
+                       cellHarga.setBorder(PdfPCell.NO_BORDER);
+                       cellHarga.setHorizontalAlignment(Element.ALIGN_CENTER);
+                       cellHarga.setPadding(5f); 
+
+                       PdfPCell cellQty = new PdfPCell(new Phrase(qty));
+                       cellQty.setBorder(PdfPCell.NO_BORDER);
+                       cellQty.setHorizontalAlignment(Element.ALIGN_CENTER);
+                       cellQty.setPadding(5f); 
+
+                       PdfPCell cellTotal = new PdfPCell(new Phrase(totalQty));
+                       cellTotal.setBorder(PdfPCell.NO_BORDER);
+                       cellTotal.setHorizontalAlignment(Element.ALIGN_CENTER);
+                       cellTotal.setPadding(5f); 
+
+                       // Menambahkan baris detail item ke tabel
+                       detail.addCell(cellMenu);
+                       detail.addCell(cellHarga);
+                       detail.addCell(cellQty);
+                       detail.addCell(cellTotal);
+
+                       // Proses data menu dan total disini (misalnya menambah ke tabel atau ke PDF)
+                   } else {
+                       // Handle jika data menu tidak ditemukan
+                       System.out.println("Menu dengan ID " + id_menu + " tidak ditemukan.");
+                   }
+
+
+               }
+
+               document.add(detail);
+               document.add(garis);
+
+               rs.close();
+               ps.close();
+               koneksi.close();
+
+           } catch (Exception e) {
+               e.printStackTrace();
+           } 
+        
+            PdfPCell sel5 = new PdfPCell(new Phrase(subTotal));
+            sel5.setBorder(PdfPCell.NO_BORDER);
+
+            PdfPCell sel6 = new PdfPCell(new Phrase(totalHarga));
+            sel6.setBorder(PdfPCell.NO_BORDER);
+            sel6.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+            PdfPCell sel7 = new PdfPCell(new Phrase(totalPPN));
+            sel7.setBorder(PdfPCell.NO_BORDER);
+
+            PdfPCell sel8 = new PdfPCell(new Phrase(metode));
+            sel8.setBorder(PdfPCell.NO_BORDER);
+            sel8.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+            PdfPCell sel9 = new PdfPCell(new Phrase(totalService));
+            sel9.setBorder(PdfPCell.NO_BORDER);
+
+            PdfPCell sel10 = new PdfPCell(new Phrase(kembalian));
+            sel10.setBorder(PdfPCell.NO_BORDER);
+            sel10.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+            PdfPTable table2 = new PdfPTable(2);
+            table2.setWidthPercentage(100); 
+            table2.addCell(sel5);
+            table2.addCell(sel6);
+            table2.addCell(sel7);
+            table2.addCell(sel8);
+            table2.addCell(sel9);
+            table2.addCell(sel10);
+
+            
+            table2.setSpacingBefore(10f);
+            table2.setSpacingAfter(10f);
+            
+            document.add(table2);
+            document.add(garis);
+            
+            document.add(closedBill);
+            document.add(jamBayar);
+
+            document.close();
+            writer.close();
+        } catch (DocumentException | FileNotFoundException e){
+            System.out.println("Error: "+e);
+        }
+    }
 
     static Connection koneksi;
     static PreparedStatement pst;
@@ -162,14 +521,64 @@ public class kasirForm extends javax.swing.JFrame {
             Statement s = c.createStatement();
             String sql = "SELECT * FROM transaksi";
             ResultSet r = s.executeQuery(sql);
+            String pegawai = "";
             while(r.next()){
+                try {
+                    int id_pegawai = r.getInt("id_pegawai");
+
+                    String sqlPegawai = "SELECT nama_pegawai FROM pegawai WHERE id_pegawai= ?";
+                    PreparedStatement ps = koneksi.prepareStatement(sqlPegawai);
+                    ps.setInt(1, id_pegawai); 
+                    ResultSet rs = ps.executeQuery();
+
+
+                    if (rs.next()) {
+                        pegawai = rs.getString("nama_pegawai");
+                    } else {
+                        System.out.println("Pegawai dengan ID " + id_pegawai + " tidak ditemukan (load nama pegawai).");
+                    }
+
+
+                    rs.close();
+                    ps.close();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } 
+                
+                String waktu_bayar = "";
+                String metode_bayar = "";
+
+                try {
+
+                    String sqlBayar = "SELECT * FROM pembayaran WHERE no_transaksi= ?";
+                    PreparedStatement ps = koneksi.prepareStatement(sqlBayar);
+                    ps.setInt(1, r.getInt("no_transaksi")); 
+                    ResultSet rs = ps.executeQuery();
+
+
+                    if (rs.next()) {
+                        waktu_bayar = rs.getString("waktu_pembayaran");
+                        metode_bayar = rs.getString("metode_pembayaran");
+                    } else {
+                        System.out.println("Transaksi dengan ID " + r.getInt("no_transaksi") + " tidak ditemukan (load pembayaran).");
+                    }
+
+
+                    rs.close();
+                    ps.close();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } 
+                
                 Object[] o = new Object [14];
                 o[0] = r.getInt("no_transaksi");
                 o[1] = r.getDate("tanggal_transaksi");
                 o[2] = r.getTime("waktu_pemesanan");
-                o[3] = "";
+                o[3] = waktu_bayar;
                 o[4] = r.getString("nama_customer");
-                o[5] = "";
+                o[5] = metode_bayar;
                 o[6] = r.getString("jenis_pemesanan");
                 o[7] = r.getInt("jumlah_customer");
                 o[8] = r.getDouble("total_transaksi");
@@ -177,7 +586,7 @@ public class kasirForm extends javax.swing.JFrame {
                 o[10] = r.getDouble("total_service");
                 o[11] = r.getInt("nomor_meja");
                 o[12] = r.getString("status_transaksi");
-                o[13] = r.getInt("id_pegawai");
+                o[13] = pegawai;
                 kasirForm.addRow(o);
             }
             
@@ -744,7 +1153,7 @@ public class kasirForm extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID Transaksi", "Tanggal", "Waktu Pemesanan", "Waktu Pembayaran", "Nama Customer", "Metode Pembayaran", "Jenis Pemesanan", "Jumlah Customer", "Total Harga", "PPN", "Service", "No Meja", "Status", "Id Pegawai"
+                "ID Transaksi", "Tanggal", "Waktu Pemesanan", "Waktu Pembayaran", "Nama Customer", "Metode Pembayaran", "Jenis Pemesanan", "Jumlah Customer", "Total Harga", "PPN", "Service", "No Meja", "Status", "Pegawai"
             }
         ));
         tabelRiwayat.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -782,7 +1191,7 @@ public class kasirForm extends javax.swing.JFrame {
             }
         });
 
-        metodeBayar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cash", "E-Wallet", "Debit", "Credit", "Qris" }));
+        metodeBayar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cash", "E-Wallet", "Debit"}));
         metodeBayar.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 metodeBayarItemStateChanged(evt);
@@ -1101,10 +1510,12 @@ public class kasirForm extends javax.swing.JFrame {
                 int k = pst.executeUpdate();
                 p.executeUpdate();
                 if (k == 1) {
+                    createPDF(Integer.parseInt(id_transaksi));
                     JOptionPane.showMessageDialog(this, "Transaksi berhasil diproses!");
                 } else {
                     JOptionPane.showMessageDialog(this, "Gagal memproses transaksi!");
                 }
+                loadRiwayat();
                 pst.close();
                 p.close();
             } catch (SQLException e) {
@@ -1379,6 +1790,7 @@ public class kasirForm extends javax.swing.JFrame {
             String service = serviceTotalValue.getText().trim();
             String status = "Unpaid";
             String pegawai = (String) employeeValue.getSelectedItem();
+            String subTotal = subTotalValue.getText().trim();
 
             if (id_trans.isEmpty())  {
                 JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi!");
@@ -1400,7 +1812,7 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
 
-            pst = getKoneksi().prepareStatement("INSERT INTO transaksi (no_transaksi, tanggal_transaksi, waktu_pemesanan,nama_customer, jenis_pemesanan, nomor_meja, jumlah_customer, total_transaksi, total_ppn, total_service, status_transaksi, id_pegawai) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            pst = getKoneksi().prepareStatement("INSERT INTO transaksi (no_transaksi, tanggal_transaksi, waktu_pemesanan,nama_customer, jenis_pemesanan, nomor_meja, jumlah_customer, total_transaksi, total_ppn, total_service, status_transaksi, id_pegawai, sub_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             pst.setString(1, id_trans);
             pst.setString(2, tanggal);
             pst.setString(3, waktu_pesan);
@@ -1412,6 +1824,8 @@ public class kasirForm extends javax.swing.JFrame {
             pst.setString(9, ppn);
             pst.setString(10, service);
             pst.setString(11, status);
+            pst.setString(12, pegawai);
+            pst.setString(13, subTotal);
             
             
 
@@ -1516,6 +1930,18 @@ public class kasirForm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
             }
         }
+        
+//        String filePath = "D:\\Asa\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf";
+//        File file = new File(filePath);
+//        if (file.exists()) {
+//            if (file.delete()) {
+//                System.out.println("File berhasil dihapus.");
+//            } else {
+//                System.out.println("Gagal menghapus file.");
+//            }
+//        } else {
+//            System.out.println("File tidak ditemukan.");
+//        }
 
     }//GEN-LAST:event_buttonHapusRiwayatActionPerformed
 
@@ -1665,9 +2091,13 @@ public class kasirForm extends javax.swing.JFrame {
         String jumlah_bayar = jumlahBayar.getText();
         
         String total_harga = totalHarga.getText();
-        Double kembalian = Double.parseDouble(total_harga) - Double.parseDouble(jumlah_bayar);
+        Double kembalian = Double.parseDouble(jumlah_bayar) - Double.parseDouble(total_harga);
         
-        kembalianBayar.setText(kembalian.toString());
+        if(kembalian < 0){
+            kembalianBayar.setText("Pembayaran kurang!");
+        } else {
+            kembalianBayar.setText(kembalian.toString());
+        }
     }//GEN-LAST:event_jumlahBayarKeyReleased
 
     private void metodeBayarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_metodeBayarActionPerformed

@@ -801,7 +801,7 @@
                         <Column editable="true" title="Service" type="java.lang.Object"/>
                         <Column editable="true" title="No Meja" type="java.lang.Object"/>
                         <Column editable="true" title="Status" type="java.lang.Object"/>
-                        <Column editable="true" title="Id Pegawai" type="java.lang.Object"/>
+                        <Column editable="true" title="Pegawai" type="java.lang.Object"/>
                       </Table>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -925,7 +925,7 @@
             <Component class="javax.swing.JComboBox" name="metodeBayar">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;Cash&quot;, &quot;E-Wallet&quot;, &quot;Debit&quot;, &quot;Credit&quot;, &quot;Qris&quot; })" type="code"/>
+                  <Connection code="new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;Cash&quot;, &quot;E-Wallet&quot;, &quot;Debit&quot;})" type="code"/>
                 </Property>
               </Properties>
               <Events>
