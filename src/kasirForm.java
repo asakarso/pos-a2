@@ -136,7 +136,7 @@ public class kasirForm extends javax.swing.JFrame {
             
             totalPPN = totalPrice*0.10;
             totalService = totalPrice*0.05;
-            total = totalPrice - (totalPPN + totalService);
+            total = totalPrice + (totalPPN + totalService);
             
             priceTotalValue.setText(String.valueOf(total));
             subTotalValue.setText(String.valueOf(totalPrice));
@@ -1337,7 +1337,7 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
             
-            if (jumlah_cust.equals("0")) {
+            if (jumlah_cust.equals("0")&&jenis_pesan.equals("Dine In")) {
                 JOptionPane.showMessageDialog(this, "Harap isi Jumlah Customer!");
                 return;
             }
@@ -1378,6 +1378,7 @@ public class kasirForm extends javax.swing.JFrame {
             if (k == 1) {
                 JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
                 resetFormKasir();
+                loadRiwayat();
             } else {
                 JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
             }
