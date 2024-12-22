@@ -730,6 +730,7 @@ public class kasirForm extends javax.swing.JFrame {
         serviceLabel = new javax.swing.JLabel();
         discLabel = new javax.swing.JLabel();
         tanggalValue = new com.toedter.calendar.JDateChooser();
+        editButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tabelRiwayat = new javax.swing.JTable();
@@ -939,6 +940,13 @@ public class kasirForm extends javax.swing.JFrame {
 
         discLabel.setText("Discount:");
 
+        editButton.setText("Edit");
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -1038,9 +1046,11 @@ public class kasirForm extends javax.swing.JFrame {
                                         .addComponent(priceTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 855, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(removeAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(removeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(removeAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(removeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(editButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(511, 511, 511))))
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
@@ -1093,13 +1103,15 @@ public class kasirForm extends javax.swing.JFrame {
                     .addComponent(addButton))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(114, 114, 114)
+                        .addGap(73, 73, 73)
+                        .addComponent(editButton)
+                        .addGap(18, 18, 18)
                         .addComponent(removeButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeAllButton)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2116,6 +2128,64 @@ public class kasirForm extends javax.swing.JFrame {
             jumlahBayar.setText("0");
         }
     }//GEN-LAST:event_metodeBayarItemStateChanged
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        int selectedRow = tabelTransaksi.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih baris yang ingin diedit terlebih dahulu.");
+            return;
+        }
+
+        DefaultTableModel kasirForm = (DefaultTableModel) tabelTransaksi.getModel();
+
+        String id_menu = kasirForm.getValueAt(selectedRow, 0).toString();
+        String nama_menu = kasirForm.getValueAt(selectedRow, 1).toString();
+        String jenis_menu = kasirForm.getValueAt(selectedRow, 2).toString();
+        String harga_menu = kasirForm.getValueAt(selectedRow, 3).toString();
+        String jumlah_beli_str = kasirForm.getValueAt(selectedRow, 4).toString();
+
+        String newJumlahBeliStr = JOptionPane.showInputDialog(this, "Jumlah beli baru:", jumlah_beli_str);
+        if (newJumlahBeliStr == null || newJumlahBeliStr.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Jumlah beli tidak boleh kosong.");
+            return;
+        }
+
+        int JumlahBeli;
+        try {
+            JumlahBeli = Integer.parseInt(newJumlahBeliStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Jumlah beli harus berupa angka.");
+            return;
+        }
+
+        try {
+            Connection c = getKoneksi();
+            String updateSQL = "UPDATE detail_transaksi SET Jumlah_beli = ? WHERE Nomor_transaksi = ? AND ID_Menu = ?";
+            pst = c.prepareStatement(updateSQL);
+            pst.setInt(1, JumlahBeli);
+            pst.setString(2, idTransaksi.getText().trim());
+            pst.setString(3, id_menu);
+
+            int updatedRows = pst.executeUpdate();
+            if (updatedRows > 0) {
+                double harga = Double.parseDouble(harga_menu);
+                double total_harga = harga * JumlahBeli;
+
+                kasirForm.setValueAt(JumlahBeli, selectedRow, 4);
+                kasirForm.setValueAt(total_harga, selectedRow, 5);
+
+                loadTabel();
+
+                JOptionPane.showMessageDialog(this, "Data berhasil diperbarui.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal memperbarui data.");
+            }
+
+            pst.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error saat memperbarui data: " + e.getMessage());
+        }    
+    }//GEN-LAST:event_editButtonActionPerformed
                                                       
     
     public static void main(String args[]) {
@@ -2166,6 +2236,7 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JTextField deskripsiMenu;
     private javax.swing.JLabel discLabel;
     private javax.swing.JTextField discValue;
+    private javax.swing.JButton editButton;
     private javax.swing.JLabel employeeLabel;
     private javax.swing.JComboBox<String> employeeValue;
     private javax.swing.JTextField hargaMenu;
