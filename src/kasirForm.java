@@ -1442,6 +1442,7 @@ public class kasirForm extends javax.swing.JFrame {
             }
             pst.close();
             loadTabel();
+            loadRiwayat();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
         }
