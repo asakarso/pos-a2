@@ -322,6 +322,14 @@ public class kasirForm extends javax.swing.JFrame {
         buttonUbahRiwayat = new javax.swing.JButton();
         buttonPrint = new javax.swing.JButton();
         buttonHapusRiwayat = new javax.swing.JButton();
+        waktuBayar = new javax.swing.JTextField();
+        jumlahBayar = new javax.swing.JTextField();
+        metodeBayar = new javax.swing.JComboBox<>();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        kembalianBayar = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tableMenu = new javax.swing.JTable();
@@ -729,7 +737,7 @@ public class kasirForm extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID Transaksi", "Tanggal", "Waktu Pemesanan", "Waktu Pembayaran", "Nama Customer", "Metode Pembayaran", "Jenis Pemesanan", "Jumlah Customer", "Total Harga", "PPN", "Service", "No Meja", "Status", "Nama Pegawai"
+                "ID Transaksi", "Tanggal", "Waktu Pemesanan", "Waktu Pembayaran", "Nama Customer", "Metode Pembayaran", "Jenis Pemesanan", "Jumlah Customer", "Total Harga", "PPN", "Service", "No Meja", "Status", "Id Pegawai"
             }
         ));
         jScrollPane2.setViewportView(tabelRiwayat);
@@ -755,20 +763,47 @@ public class kasirForm extends javax.swing.JFrame {
             }
         });
 
+        metodeBayar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cash", "E-Wallet", "Debit", "Credit", "Qris" }));
+
+        jLabel13.setText("Waktu Bayar:");
+
+        jLabel14.setText("Metode Bayar:");
+
+        jLabel18.setText("Jumlah Bayar:");
+
+        jLabel19.setText("Kembalian:");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(buttonUbahRiwayat)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buttonHapusRiwayat)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(buttonPrint)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                            .addComponent(buttonUbahRiwayat)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(buttonHapusRiwayat)
+                            .addGap(1030, 1030, 1030)
+                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(waktuBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(buttonPrint, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                            .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGap(18, 18, 18)
+                            .addComponent(kembalianBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                            .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jumlahBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                            .addComponent(jLabel14)
+                            .addGap(18, 18, 18)
+                            .addComponent(metodeBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(165, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -779,9 +814,24 @@ public class kasirForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonUbahRiwayat)
-                    .addComponent(buttonPrint)
-                    .addComponent(buttonHapusRiwayat))
-                .addContainerGap(368, Short.MAX_VALUE))
+                    .addComponent(buttonHapusRiwayat)
+                    .addComponent(waktuBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(metodeBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jumlahBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel18))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(kembalianBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel19))
+                .addGap(18, 18, 18)
+                .addComponent(buttonPrint)
+                .addContainerGap(243, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("RIWAYAT TRANSAKSI", jPanel2);
@@ -938,6 +988,7 @@ public class kasirForm extends javax.swing.JFrame {
 
     private void buttonPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrintActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_buttonPrintActionPerformed
 
     private void buttonUbahRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUbahRiwayatActionPerformed
@@ -1412,6 +1463,7 @@ public class kasirForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
         }
     }//GEN-LAST:event_btnTambahActionPerformed
+                                                      
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -1472,9 +1524,13 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1494,10 +1550,13 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JTextField jamValue;
     private javax.swing.JComboBox<String> jenisMenu;
     private javax.swing.JComboBox<String> jenisValue;
+    private javax.swing.JTextField jumlahBayar;
     private javax.swing.JTextField jumlahCust;
+    private javax.swing.JTextField kembalianBayar;
     private javax.swing.JTextField mejaValue;
     private javax.swing.JLabel menuLabel;
     private javax.swing.JComboBox<String> menuValue;
+    private javax.swing.JComboBox<String> metodeBayar;
     private javax.swing.JTextField namaMenu;
     private java.awt.PopupMenu popupMenu1;
     private java.awt.PopupMenu popupMenu2;
@@ -1520,5 +1579,6 @@ public class kasirForm extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser tanggalValue;
     private javax.swing.JTextField totalItemsValue;
     private javax.swing.JTextField totalPPNValue;
+    private javax.swing.JTextField waktuBayar;
     // End of variables declaration//GEN-END:variables
 }
