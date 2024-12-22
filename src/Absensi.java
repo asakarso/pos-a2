@@ -79,6 +79,20 @@ public class Absensi extends javax.swing.JFrame {
         kalender.setDate(null);
         gender.setSelectedIndex(0);
     }
+    
+    private void pegawaiCombo(){
+        try {
+            Connection c = absensi.Koneksi.koneksiDB();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM pegawai";
+            ResultSet r = s.executeQuery(sql);
+            while(r.next()){
+                idPegawai.addItem(r.getString("id_pegawai"));
+            }
+        } catch(SQLException e){
+            System.out.println("Error Memuat Pegawai");
+        }
+    }
 
     public Absensi() {
         initComponents(); 
@@ -86,6 +100,7 @@ public class Absensi extends javax.swing.JFrame {
         add(tgl); 
         tampil_data();
         clearFields();
+        pegawaiCombo();
     }
 
 
@@ -121,6 +136,8 @@ public class Absensi extends javax.swing.JFrame {
         tanggal = new javax.swing.JLabel();
         noHp = new javax.swing.JTextField();
         idPegawai = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
+        namaPegawai = new javax.swing.JTextField();
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -238,7 +255,14 @@ public class Absensi extends javax.swing.JFrame {
             }
         });
 
-        idPegawai.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3" }));
+        idPegawai.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {""}));
+        idPegawai.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                idPegawaiItemStateChanged(evt);
+            }
+        });
+
+        jLabel5.setText("Nama");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -249,44 +273,46 @@ public class Absensi extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(104, 104, 104)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(namaPegawai))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(41, 41, 41)
-                                    .addComponent(gender, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(gender, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(layout.createSequentialGroup()
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(tanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel8)
                                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(layout.createSequentialGroup()
                                             .addGap(32, 32, 32)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(noHp, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(kalender, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGroup(layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(kalender, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                                                .addComponent(noHp)))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                             .addGap(34, 34, 34)
-                                            .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGroup(layout.createSequentialGroup()
+                                            .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(idAbsensi, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(idPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addComponent(idPegawai, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(idAbsensi))))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(tb_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(tb_simpan)
-                                        .addGap(78, 78, 78)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tb_simpan)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(tb_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(12, 12, 12)
                                 .addComponent(tb_hapus)
-                                .addGap(24, 24, 24)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(tb_batal)))
-                        .addGap(108, 108, 108)
+                        .addGap(117, 117, 117)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 630, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
@@ -323,6 +349,10 @@ public class Absensi extends javax.swing.JFrame {
                                 .addGap(147, 147, 147)
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(namaPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(15, 15, 15)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -362,32 +392,67 @@ public class Absensi extends javax.swing.JFrame {
     private void tb_simpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tb_simpanActionPerformed
                                           
         try {
-            // Mengambil nilai dari komponen yang benar
-            String idabsensi = idAbsensi.getText();  
-            String idpegawai = (String) idPegawai.getSelectedItem(); 
-            String statusSelected = (String) status.getSelectedItem();  
+            // Mengambil nilai dari komponen
+            String idabsensi = idAbsensi.getText();
+            String idpegawai = (String) idPegawai.getSelectedItem();
+            String statusSelected = (String) status.getSelectedItem();
             java.sql.Date tanggal = new java.sql.Date(kalender.getDate().getTime());
 
-            // Menyusun query SQL dengan prepared statement
-            String sql = "INSERT INTO absen_pegawai (id_absen, id_pegawai, status,  tanggal) VALUES (?, ?, ?, ? )";
+            // Pastikan nilai input tidak null atau kosong
+            if (idabsensi.isEmpty() || idpegawai == null || statusSelected == null) {
+                JOptionPane.showMessageDialog(null, "Data tidak boleh kosong");
+                return;
+            }
 
-            // Mendapatkan koneksi ke database
+            // Query untuk INSERT
+            String sqlInsert = "INSERT INTO absen_pegawai (id_absen, id_pegawai, status, tanggal) VALUES (?, ?, ?, ?)";
             java.sql.Connection conn = absensi.Koneksi.koneksiDB();
-            java.sql.PreparedStatement pst = conn.prepareStatement(sql);
+            java.sql.PreparedStatement pstInsert = conn.prepareStatement(sqlInsert);
 
-            pst.setString(1, idabsensi);
-            pst.setString(2, idpegawai);
-            pst.setString(3, statusSelected);
-            pst.setString(4, tanggal.toString());
+            // Mengatur parameter untuk query INSERT
+            pstInsert.setString(1, idabsensi);
+            pstInsert.setString(2, idpegawai);
+            pstInsert.setString(3, statusSelected);
+            pstInsert.setDate(4, tanggal);
 
-            pst.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Berhasil disimpan");
+            // Menjalankan query INSERT
+            pstInsert.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Data berhasil disimpan");
+
+            // Jika status adalah "Hadir", tambahkan jumlah absen
+            if (statusSelected.equalsIgnoreCase("Hadir")) {
+                String sqlUpdate = "UPDATE pegawai SET total_absen = total_absen + 1 WHERE id_pegawai = ?";
+                java.sql.PreparedStatement pstUpdate = conn.prepareStatement(sqlUpdate);
+
+                // Mengatur parameter untuk query UPDATE
+                pstUpdate.setString(1, idpegawai);
+
+                // Menjalankan query UPDATE
+                int rowsUpdated = pstUpdate.executeUpdate();
+                if (rowsUpdated > 0) {
+                    JOptionPane.showMessageDialog(null, "Jumlah absen berhasil diperbarui");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Pegawai dengan ID " + idpegawai + " tidak ditemukan");
+                }
+
+                // Menutup statement UPDATE
+                pstUpdate.close();
+            }
+
+            // Menampilkan data dan membersihkan input
             tampil_data();
             clearFields();
+
+            // Menutup statement dan koneksi
+            pstInsert.close();
+            conn.close();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Gagal disimpan");
-            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + e.getMessage());
+            e.printStackTrace();
         }
+
+        
+        
 
     }//GEN-LAST:event_tb_simpanActionPerformed
 
@@ -582,6 +647,30 @@ public class Absensi extends javax.swing.JFrame {
             gender.setSelectedItem(gender_pegawai);
         }
     }//GEN-LAST:event_jTableMouseClicked
+
+    private void idPegawaiItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_idPegawaiItemStateChanged
+        // TODO add your handling code here:
+        String idpegawai = (String) idPegawai.getSelectedItem();
+        
+        try {
+            Connection c = absensi.Koneksi.koneksiDB();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM pegawai WHERE id_pegawai = ?";
+            PreparedStatement pst = c.prepareStatement(sql);
+            pst.setString(1, idpegawai);  
+            ResultSet r = pst.executeQuery();
+            if (r.next()) {
+                namaPegawai.setText(r.getString("nama_pegawai"));
+                noHp.setText(r.getString("no_hp"));
+                gender.setSelectedItem(r.getString("gender"));
+            } else {
+                System.out.println("Pegawai dengan ID " + idpegawai + " tidak ditemukan (load nama pegawai).");
+            }
+        } catch(SQLException e){
+            System.out.println("Error Memuat Pegawai");
+        }
+        
+    }//GEN-LAST:event_idPegawaiItemStateChanged
     
 
     /**
@@ -607,12 +696,14 @@ public class Absensi extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable;
     private com.toedter.calendar.JDateChooser kalender;
+    private javax.swing.JTextField namaPegawai;
     private javax.swing.JTextField noHp;
     private javax.swing.JComboBox<String> status;
     private javax.swing.JLabel tanggal;
