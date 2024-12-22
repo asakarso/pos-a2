@@ -1402,7 +1402,38 @@ public class kasirForm extends javax.swing.JFrame {
 
     private void buttonHapusRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonHapusRiwayatActionPerformed
         // TODO add your handling code here:
-        
+        int selectedRow = tabelRiwayat.getSelectedRow();
+    
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih baris yang ingin dihapus!");
+            return;
+        }
+
+        String id_transaksi = tabelRiwayat.getValueAt(selectedRow, 0).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this, 
+                "Apakah Anda yakin ingin menghapus transaksi dengan ID: " + id_transaksi + "?", 
+                "Konfirmasi Penghapusan", 
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                Connection c = getKoneksi();
+                String sql = "DELETE FROM transaksi WHERE no_transaksi = ?";
+                PreparedStatement pst = c.prepareStatement(sql);
+                pst.setString(1, id_transaksi);
+
+                int result = pst.executeUpdate();
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(this, "Transaksi berhasil dihapus!");
+                    loadRiwayat(); 
+                } else {
+                    JOptionPane.showMessageDialog(this, "Transaksi gagal dihapus!");
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+            }
+        }
     }//GEN-LAST:event_buttonHapusRiwayatActionPerformed
 
     private void tableMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMenuMouseClicked
