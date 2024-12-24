@@ -130,7 +130,7 @@ public class kasirForm extends javax.swing.JFrame {
       
         Document document = new Document();
         try{
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("D:\\Asa\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf"));
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("D:\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf"));
             document.open();
 
             com.itextpdf.text.Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
@@ -1305,7 +1305,7 @@ public class kasirForm extends javax.swing.JFrame {
                             .addComponent(jLabel14))
                         .addGap(18, 18, 18)
                         .addComponent(buttonPrint)))
-                .addContainerGap(228, Short.MAX_VALUE))
+                .addContainerGap(262, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("RIWAYAT TRANSAKSI", jPanel2);
@@ -1439,7 +1439,7 @@ public class kasirForm extends javax.swing.JFrame {
                             .addComponent(btnUbah)
                             .addComponent(btnHapus)))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(348, Short.MAX_VALUE))
+                .addContainerGap(382, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("MENU", jPanel3);
@@ -1452,9 +1452,7 @@ public class kasirForm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 723, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 34, Short.MAX_VALUE))
+            .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 757, Short.MAX_VALUE)
         );
 
         pack();

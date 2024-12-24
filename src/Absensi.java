@@ -74,6 +74,7 @@ public class Absensi extends javax.swing.JFrame {
     private void clearFields() {
         idAbsensi.setText("");
         idPegawai.setSelectedIndex(0);
+        namaPegawai.setText("");
         status.setSelectedIndex(0);
         noHp.setText("");
         kalender.setDate(null);
@@ -86,11 +87,13 @@ public class Absensi extends javax.swing.JFrame {
             Statement s = c.createStatement();
             String sql = "SELECT * FROM pegawai";
             ResultSet r = s.executeQuery(sql);
+            
+            idPegawai.removeAllItems(); 
             while(r.next()){
                 idPegawai.addItem(r.getString("id_pegawai"));
             }
         } catch(SQLException e){
-            System.out.println("Error Memuat Pegawai");
+            System.out.println("Error Memuat Pegawai"+ e.getMessage());
         }
     }
 
@@ -445,7 +448,7 @@ public class Absensi extends javax.swing.JFrame {
 
             // Menutup statement dan koneksi
             pstInsert.close();
-            conn.close();
+            pegawaiCombo();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + e.getMessage());
             e.printStackTrace();
@@ -519,39 +522,59 @@ public class Absensi extends javax.swing.JFrame {
     }//GEN-LAST:event_tb_editActionPerformed
 
     private void tb_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tb_hapusActionPerformed
-        try {
+    try {
+        java.sql.Connection conn = absensi.Koneksi.koneksiDB();
 
-          java.sql.Connection conn = absensi.Koneksi.koneksiDB();
+        String idabsensi = idAbsensi.getText().trim();
+        if (idabsensi.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Nomor tidak boleh kosong!");
+            return;
+        }
 
-          String idabsensi = idAbsensi.getText().trim();
-          if (idabsensi.isEmpty()) {
-              JOptionPane.showMessageDialog(null, "Nomor tidak boleh kosong!");
-              return;
-          }
+        // Ambil id_pegawai dari data absen yang akan dihapus
+        String idPegawai = "";
+        String sqlSelect = "SELECT id_pegawai FROM absen_pegawai WHERE id_absen = ?";
+        java.sql.PreparedStatement pstSelect = conn.prepareStatement(sqlSelect);
+        pstSelect.setString(1, idabsensi);
+        java.sql.ResultSet rs = pstSelect.executeQuery();
+        if (rs.next()) {
+            idPegawai = rs.getString("id_pegawai");
+        } else {
+            JOptionPane.showMessageDialog(null, "Data tidak ditemukan");
+            return;
+        }
 
-          String sql = "DELETE FROM absen_pegawai WHERE id_absen = ?";
-          java.sql.PreparedStatement pst = conn.prepareStatement(sql);
-          pst.setString(1, idabsensi);
-          int rowsAffected = pst.executeUpdate();
-          if (rowsAffected > 0) {
-              JOptionPane.showMessageDialog(null, "Data berhasil dihapus");
-          } else {
-              JOptionPane.showMessageDialog(null, "Data tidak ditemukan");
-          }
-          // Panggil method untuk menampilkan data (jika ada)
-          tampil_data();
-          clearFields();
+        // Hapus data absensi
+        String sqlDelete = "DELETE FROM absen_pegawai WHERE id_absen = ?";
+        java.sql.PreparedStatement pstDelete = conn.prepareStatement(sqlDelete);
+        pstDelete.setString(1, idabsensi);
+        int rowsAffected = pstDelete.executeUpdate();
 
-          // Tutup PreparedStatement dan koneksi
-          pst.close();
-          conn.close();
+        if (rowsAffected > 0) {
+            JOptionPane.showMessageDialog(null, "Data berhasil dihapus");
 
-      } catch (Exception e) {
-          JOptionPane.showMessageDialog(null, "Proses penghapusan gagal");
-          System.out.println("Error: " + e.getMessage());
-          e.printStackTrace();  
-      }
+            // Kurangi total absen di tabel pegawai
+            String sqlUpdate = "UPDATE pegawai SET total_absen = total_absen - 1 WHERE id_pegawai = ?";
+            java.sql.PreparedStatement pstUpdate = conn.prepareStatement(sqlUpdate);
+            pstUpdate.setString(1, idPegawai);
+            pstUpdate.executeUpdate();
+        } else {
+            JOptionPane.showMessageDialog(null, "Data tidak ditemukan");
+        }
 
+        // Refresh tabel data
+        tampil_data();
+        clearFields();
+
+        // Tutup PreparedStatement dan koneksi
+        pstSelect.close();
+        pstDelete.close();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Proses penghapusan gagal");
+        System.out.println("Error: " + e.getMessage());
+        e.printStackTrace();
+    }
     }//GEN-LAST:event_tb_hapusActionPerformed
 
     private void tb_batalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tb_batalActionPerformed
@@ -606,7 +629,7 @@ public class Absensi extends javax.swing.JFrame {
     }//GEN-LAST:event_noHpActionPerformed
 
     private void cariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariActionPerformed
-        // TODO add your handling code here:
+      
     }//GEN-LAST:event_cariActionPerformed
 
     private void jTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableKeyReleased
@@ -622,6 +645,7 @@ public class Absensi extends javax.swing.JFrame {
             String id_pegawai = jTable.getValueAt(selectedRow, 1).toString();
             String status_pegawai = jTable.getValueAt(selectedRow, 5).toString();
             String no_hp = jTable.getValueAt(selectedRow, 7).toString();
+            String nama = jTable.getValueAt(selectedRow, 2).toString();
             String tanggal_absensi = jTable.getValueAt(selectedRow, 4).toString();
             String gender_pegawai = jTable.getValueAt(selectedRow, 6).toString();
             
@@ -642,6 +666,7 @@ public class Absensi extends javax.swing.JFrame {
             
             idAbsensi.setText(id_absensi);
             idPegawai.setSelectedItem(id_pegawai);
+            namaPegawai.setText(nama);
             status.setSelectedItem(status_pegawai);
             noHp.setText(no_hp);
             gender.setSelectedItem(gender_pegawai);
@@ -650,7 +675,13 @@ public class Absensi extends javax.swing.JFrame {
 
     private void idPegawaiItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_idPegawaiItemStateChanged
         // TODO add your handling code here:
+        
         String idpegawai = (String) idPegawai.getSelectedItem();
+        
+        if (idpegawai == null || idpegawai.trim().isEmpty()) {
+            System.out.println("ID Pegawai belum dipilih.");
+            return; // Keluar dari fungsi
+        }
         
         try {
             Connection c = absensi.Koneksi.koneksiDB();
@@ -667,7 +698,7 @@ public class Absensi extends javax.swing.JFrame {
                 System.out.println("Pegawai dengan ID " + idpegawai + " tidak ditemukan (load nama pegawai).");
             }
         } catch(SQLException e){
-            System.out.println("Error Memuat Pegawai");
+            System.out.println("Error Memuat Pegawai" + e.getMessage());
         }
         
     }//GEN-LAST:event_idPegawaiItemStateChanged
