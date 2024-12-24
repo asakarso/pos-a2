@@ -1971,7 +1971,6 @@ public class kasirForm extends javax.swing.JFrame {
         jenisMenu.setSelectedItem(jenis);
         hargaMenu.setText(harga);
         deskripsiMenu.setText(deskripsi);
-
     }//GEN-LAST:event_tableMenuMouseClicked
 
     private void jenisMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jenisMenuActionPerformed
