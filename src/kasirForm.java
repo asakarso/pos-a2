@@ -435,21 +435,21 @@ public class kasirForm extends javax.swing.JFrame {
 
             while (r.next()) {
                 String id_menu = r.getString("ID_Menu");
+                String harga_menu = r.getString("Harga_Menu");
                 String jumlah_beli_str = r.getString("Jumlah_beli");
 
-                String queryMenu = "SELECT nama_menu, jenis_menu, harga_menu FROM menu WHERE id_menu = ?";
+                String queryMenu = "SELECT nama_menu, jenis_menu FROM menu WHERE id_menu = ?";
                 pst = c.prepareStatement(queryMenu);
                 pst.setString(1, id_menu);
                 ResultSet rs = pst.executeQuery();
 
                 String nama_menu = "";
                 String jenis_menu = "";
-                String harga_menu = "";
 
                 if (rs.next()) {
                     nama_menu = rs.getString("nama_menu");
                     jenis_menu = rs.getString("jenis_menu");
-                    harga_menu = rs.getString("harga_menu");
+                    
                 } else {
                     JOptionPane.showMessageDialog(this, "Menu tidak ditemukan untuk ID_Menu: " + id_menu);
                     continue;
@@ -667,8 +667,6 @@ public class kasirForm extends javax.swing.JFrame {
         resetFormKasir();
     }
     
-    
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1739,20 +1737,23 @@ public class kasirForm extends javax.swing.JFrame {
             }
 
             String id_menu = "";
-            pst = getKoneksi().prepareStatement("SELECT id_menu FROM menu WHERE nama_menu = ?");
+            String harga_menu = "";
+            pst = getKoneksi().prepareStatement("SELECT id_menu, harga_menu FROM menu WHERE nama_menu = ?");
             pst.setString(1, nama_menu);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 id_menu = rs.getString("id_menu");
+                harga_menu = rs.getString("harga_menu");
             } else {
                 JOptionPane.showMessageDialog(this, "Menu tidak ditemukan!");
                 return;
             }
 
-            pst = getKoneksi().prepareStatement("INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Jumlah_Beli) VALUES (?, ?, ?)");
+            pst = getKoneksi().prepareStatement("INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Harga_Menu, Jumlah_Beli) VALUES (?, ?, ?, ?)");
             pst.setString(1, id_trans);
             pst.setString(2, id_menu);
-            pst.setString(3, jumlah_item);
+            pst.setString(3, harga_menu);
+            pst.setString(4, jumlah_item);
 
             int k = pst.executeUpdate();
             if (k == 1) {
