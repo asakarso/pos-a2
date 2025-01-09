@@ -374,7 +374,7 @@ public class kasirForm extends javax.swing.JFrame {
     
     public static Connection getKoneksi(){
         try {
-            String url = "jdbc:mysql://localhost/restoran";
+            String url = "jdbc:mysql://localhost/restoran_a2_fix";
             String user = "root";
             String password = "";
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
@@ -509,30 +509,30 @@ public class kasirForm extends javax.swing.JFrame {
         }
     }
     
-    public void loadRiwayat(){
-        DefaultTableModel kasirForm = (DefaultTableModel)tabelRiwayat.getModel();
+    public void loadRiwayat() {
+        DefaultTableModel kasirForm = (DefaultTableModel) tabelRiwayat.getModel();
         kasirForm.getDataVector().removeAllElements();
         kasirForm.fireTableDataChanged();
-        
+
         LocalTime now = LocalTime.now();
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         waktuBayar.setText(now.format(timeFormatter));
-        
-        try{
+
+        try {
             Connection c = getKoneksi();
             Statement s = c.createStatement();
             String sql = "SELECT * FROM transaksi";
             ResultSet r = s.executeQuery(sql);
             String pegawai = "";
-            while(r.next()){
+
+            while (r.next()) {
                 try {
                     int id_pegawai = r.getInt("id_pegawai");
 
                     String sqlPegawai = "SELECT nama_pegawai FROM pegawai WHERE id_pegawai= ?";
                     PreparedStatement ps = koneksi.prepareStatement(sqlPegawai);
-                    ps.setInt(1, id_pegawai); 
+                    ps.setInt(1, id_pegawai);
                     ResultSet rs = ps.executeQuery();
-
 
                     if (rs.next()) {
                         pegawai = rs.getString("nama_pegawai");
@@ -540,24 +540,27 @@ public class kasirForm extends javax.swing.JFrame {
                         System.out.println("Pegawai dengan ID " + id_pegawai + " tidak ditemukan (load nama pegawai).");
                     }
 
-
                     rs.close();
                     ps.close();
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                } 
-                
+                }
+
                 String waktu_bayar = "";
                 String metode_bayar = "";
+                double subtotal = 0; 
+                double ppn = 0; 
+                double service = 0; 
+                double total_harga = 0; 
+                String status = r.getString("status_transaksi");
+                String no_meja = mejaValue.getText().trim();
 
                 try {
-
                     String sqlBayar = "SELECT * FROM pembayaran WHERE no_transaksi= ?";
                     PreparedStatement ps = koneksi.prepareStatement(sqlBayar);
-                    ps.setInt(1, r.getInt("no_transaksi")); 
+                    ps.setInt(1, r.getInt("no_transaksi"));
                     ResultSet rs = ps.executeQuery();
-
 
                     if (rs.next()) {
                         waktu_bayar = rs.getString("waktu_pembayaran");
@@ -566,15 +569,40 @@ public class kasirForm extends javax.swing.JFrame {
                         System.out.println("Transaksi dengan ID " + r.getInt("no_transaksi") + " tidak ditemukan (load pembayaran).");
                     }
 
-
                     rs.close();
                     ps.close();
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                } 
-                
-                Object[] o = new Object [14];
+                }
+
+                // Ambil data dari detail_transaksi dan hitung subtotal
+                try {
+                    String sqlDetail = "SELECT * FROM detail_transaksi WHERE Nomor_Transaksi = ?";
+                    PreparedStatement psDetail = koneksi.prepareStatement(sqlDetail);
+                    psDetail.setInt(1, r.getInt("no_transaksi"));
+                    ResultSet rsDetail = psDetail.executeQuery();
+
+                    while (rsDetail.next()) {
+                        // Hitung subtotal
+                        subtotal += rsDetail.getDouble("Harga_Menu") * rsDetail.getInt("Jumlah_Beli");
+                    }
+
+                    // Hitung PPN dan Service
+                    ppn = subtotal * 0.10; // PPN 10%
+                    service = subtotal * 0.06; // Service 6%
+
+                    // Ambil nilai total_harga dari tabel transaksi
+                    total_harga = r.getDouble("total_harga");
+
+                    rsDetail.close();
+                    psDetail.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                // Tambahkan data ke tabel
+                Object[] o = new Object[14]; // Menjaga kolom tetap 14, tanpa kolom subtotal
                 o[0] = r.getInt("no_transaksi");
                 o[1] = r.getDate("tanggal_transaksi");
                 o[2] = r.getTime("waktu_pemesanan");
@@ -583,23 +611,25 @@ public class kasirForm extends javax.swing.JFrame {
                 o[5] = metode_bayar;
                 o[6] = r.getString("jenis_pemesanan");
                 o[7] = r.getInt("jumlah_customer");
-                o[8] = r.getDouble("total_transaksi");
-                o[9] = r.getDouble("total_ppn");
-                o[10] = r.getDouble("total_service");
-                o[11] = r.getInt("nomor_meja");
-                o[12] = r.getString("status_transaksi");
-                o[13] = pegawai;
+                o[8] = total_harga; // Menampilkan subtotal sebagai perhitungan, tetapi tidak sebagai kolom
+                o[9] = ppn; // Menampilkan PPN
+                o[10] = service; // Menampilkan service
+                o[11] = no_meja; // Menampilkan total harga
+                o[12] = status; // Menampilkan diskon
+                o[13] = pegawai; // Menampilkan pegawai yang menangani transaksi
                 kasirForm.addRow(o);
             }
-            
+
             r.close();
             s.close();
-        } catch(SQLException e){
-            e.printStackTrace(); 
+        } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("Terjadi error saat memuat data: " + e.getMessage());
         }
-        
-    }  
+    }
+
+
+
     
     public void loadMenu(){
         DefaultTableModel menuForm = (DefaultTableModel)tableMenu.getModel();
@@ -1639,9 +1669,9 @@ public class kasirForm extends javax.swing.JFrame {
         }
 
         int confirm = JOptionPane.showConfirmDialog(this,
-            "Apakah Anda yakin ingin menghapus semua data untuk ID Transaksi: " + id_trans + "?",
-            "Konfirmasi Hapus Semua",
-            JOptionPane.YES_NO_OPTION);
+                "Apakah Anda yakin ingin menghapus semua data untuk ID Transaksi: " + id_trans + "?",
+                "Konfirmasi Hapus Semua",
+                JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
             Connection c = getKoneksi();
@@ -1651,76 +1681,110 @@ public class kasirForm extends javax.swing.JFrame {
             }
 
             try {
-                String sql = "DELETE FROM detail_transaksi WHERE Nomor_transaksi = ?";
-                PreparedStatement p = c.prepareStatement(sql);
-                p.setString(1, id_trans);
+                // Hapus data di tabel detail_transaksi
+                String sqlDetail = "DELETE FROM detail_transaksi WHERE Nomor_transaksi = ?";
+                PreparedStatement pDetail = c.prepareStatement(sqlDetail);
+                pDetail.setString(1, id_trans);
 
-                int rowsAffected = p.executeUpdate();
-                if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(this,
-                        "Semua data untuk ID Transaksi: " + id_trans + " berhasil dihapus.",
-                        "Sukses",
-                        JOptionPane.INFORMATION_MESSAGE);
+                int rowsAffectedDetail = pDetail.executeUpdate();
+                if (rowsAffectedDetail > 0) {
+                    // Setelah berhasil menghapus data detail_transaksi, hapus data di tabel transaksi
+                    String sqlTransaksi = "DELETE FROM transaksi WHERE no_transaksi = ?";
+                    PreparedStatement pTransaksi = c.prepareStatement(sqlTransaksi);
+                    pTransaksi.setString(1, id_trans);
 
-                    loadTabel();
-                    //                resetForm();
+                    int rowsAffectedTransaksi = pTransaksi.executeUpdate();
+                    if (rowsAffectedTransaksi > 0) {
+                        JOptionPane.showMessageDialog(this,
+                                "Semua data untuk ID Transaksi: " + id_trans + " berhasil dihapus.",
+                                "Sukses",
+                                JOptionPane.INFORMATION_MESSAGE);
+
+                        loadTabel();  // Memuat ulang data di tabel
+                        // resetForm();  // Opsional, jika Anda ingin mereset form setelah penghapusan
+                    } else {
+                        JOptionPane.showMessageDialog(this,
+                                "Tidak ada data ditemukan untuk ID Transaksi: " + id_trans + " di tabel transaksi.",
+                                "Kesalahan",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                    pTransaksi.close();
                 } else {
                     JOptionPane.showMessageDialog(this,
-                        "Tidak ada data ditemukan untuk ID Transaksi: " + id_trans,
-                        "Kesalahan",
-                        JOptionPane.ERROR_MESSAGE);
+                            "Tidak ada data ditemukan untuk ID Transaksi: " + id_trans + " di detail_transaksi.",
+                            "Kesalahan",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-
-                p.close();
+                pDetail.close();
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this,
-                    "Terjadi kesalahan saat menghapus data: " + e.getMessage(),
-                    "Kesalahan",
-                    JOptionPane.ERROR_MESSAGE);
+                        "Terjadi kesalahan saat menghapus data: " + e.getMessage(),
+                        "Kesalahan",
+                        JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         }
+
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        // TODO add your handling code here:
-        int selectedRow = tabelTransaksi.getSelectedRow();
+       // TODO add your handling code here:
+    int selectedRow = tabelTransaksi.getSelectedRow();
 
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Pilih baris yang akan dihapus!");
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih baris yang akan dihapus!");
+        return;
+    }
+
+    try {
+        String id_trans = idTransaksi.getText().trim();
+        String id_menu = (String) tabelTransaksi.getValueAt(selectedRow, 0);
+
+        if (id_trans.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi terlebih dahulu!");
             return;
         }
 
-        try {
-            String id_trans = idTransaksi.getText().trim();
-            String id_menu = (String) tabelTransaksi.getValueAt(selectedRow, 0);
+        Connection c = getKoneksi();
+        String sql = "DELETE FROM detail_transaksi WHERE Nomor_Transaksi = ? AND ID_Menu = ?";
+        pst = c.prepareStatement(sql);
+        pst.setString(1, id_trans);
+        pst.setString(2, id_menu);
 
-            if (id_trans.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi terlebih dahulu!");
-                return;
+        int k = pst.executeUpdate();
+
+        if (k > 0) {
+            // Cek jika ID Transaksi hanya memiliki satu item di tabel detail_transaksi
+            String checkSql = "SELECT COUNT(*) FROM detail_transaksi WHERE Nomor_Transaksi = ?";
+            PreparedStatement checkPst = c.prepareStatement(checkSql);
+            checkPst.setString(1, id_trans);
+            ResultSet rs = checkPst.executeQuery();
+
+            if (rs.next()) {
+                int itemCount = rs.getInt(1);
+                if (itemCount == 0) {
+                    // Jika tidak ada item lagi, hapus transaksi
+                    String deleteTransaksiSql = "DELETE FROM transaksi WHERE no_transaksi = ?";
+                    PreparedStatement deleteTransaksiPst = c.prepareStatement(deleteTransaksiSql);
+                    deleteTransaksiPst.setString(1, id_trans);
+                    deleteTransaksiPst.executeUpdate();
+                }
             }
 
-            Connection c = getKoneksi();
-            String sql = "DELETE FROM detail_transaksi WHERE Nomor_Transaksi = ? AND ID_Menu = ?";
-            pst = c.prepareStatement(sql);
-            pst.setString(1, id_trans);
-            pst.setString(2, id_menu);
+            // Hapus baris dari JTable
+            DefaultTableModel model = (DefaultTableModel) tabelTransaksi.getModel();
+            model.removeRow(selectedRow);
 
-            int k = pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Item berhasil dihapus dari transaksi!");
 
-            if (k > 0) {
-                DefaultTableModel model = (DefaultTableModel) tabelTransaksi.getModel();
-                model.removeRow(selectedRow);
-
-                JOptionPane.showMessageDialog(this, "Item berhasil dihapus dari transaksi!");
-
-                loadTabel();
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal menghapus item!");
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+            loadTabel();  // Memuat ulang data di tabel
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal menghapus item!");
         }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
+    }
+
     }//GEN-LAST:event_removeButtonActionPerformed
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
@@ -1730,40 +1794,86 @@ public class kasirForm extends javax.swing.JFrame {
             String nama_menu = (String) menuValue.getSelectedItem();
             String jumlah_item = qtyInputValue.getText().trim();
 
-            if (jumlah_item.equals("0")||id_trans.isEmpty())  {
+            if (jumlah_item.equals("0") || id_trans.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi dan jumlah item menu!");
                 return;
             }
 
-            String id_menu = "";
-            String harga_menu = "";
-            pst = getKoneksi().prepareStatement("SELECT id_menu, harga_menu FROM menu WHERE nama_menu = ?");
-            pst.setString(1, nama_menu);
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                id_menu = rs.getString("id_menu");
-                harga_menu = rs.getString("harga_menu");
-            } else {
-                JOptionPane.showMessageDialog(this, "Menu tidak ditemukan!");
+            // Periksa apakah transaksi sudah ada
+            try (PreparedStatement checkPs = getKoneksi().prepareStatement(
+                    "SELECT 1 FROM transaksi WHERE no_transaksi = ?")) {
+                checkPs.setString(1, id_trans);
+                try (ResultSet checkRs = checkPs.executeQuery()) {
+                    if (!checkRs.next()) { // Jika transaksi tidak ditemukan
+                        try (PreparedStatement insertPs = getKoneksi().prepareStatement(
+                                "INSERT INTO transaksi (no_transaksi) VALUES (?)")) {
+                            insertPs.setString(1, id_trans);
+                            insertPs.executeUpdate();
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error saat memeriksa atau menambahkan transaksi: " + e.getMessage());
                 return;
             }
 
-            pst = getKoneksi().prepareStatement("INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Harga_Menu, Jumlah_Beli) VALUES (?, ?, ?, ?)");
-            pst.setString(1, id_trans);
-            pst.setString(2, id_menu);
-            pst.setString(3, harga_menu);
-            pst.setString(4, jumlah_item);
+            // Ambil detail menu dan harga
+            String id_menu = "";
+            String harga_menu = "";
 
-            int k = pst.executeUpdate();
-            if (k == 1) {
-                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
+            try (PreparedStatement pst = getKoneksi().prepareStatement(
+                    "SELECT id_menu, harga_menu FROM menu WHERE nama_menu = ?")) {
+                pst.setString(1, nama_menu);
+                try (ResultSet rs = pst.executeQuery()) {
+                    if (rs.next()) {
+                        id_menu = rs.getString("id_menu");
+                        harga_menu = rs.getString("harga_menu");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Menu tidak ditemukan!");
+                        return;
+                    }
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error saat mengambil detail menu: " + e.getMessage());
+                return;
             }
-            loadTabel();
-        } catch (SQLException e) {
+
+            // Cek diskon menu (jika ada)
+            try (PreparedStatement pst = getKoneksi().prepareStatement(
+                    "SELECT harga_diskon FROM menu_diskon WHERE id_menu = ?")) {
+                pst.setString(1, id_menu);
+                try (ResultSet rs = pst.executeQuery()) {
+                    if (rs.next()) {
+                        harga_menu = rs.getString("harga_diskon"); // Gunakan harga diskon jika ada
+                    }
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error saat memeriksa diskon menu: " + e.getMessage());
+                return;
+            }
+
+            // Tambahkan ke tabel detail_transaksi
+            try (PreparedStatement pst = getKoneksi().prepareStatement(
+                    "INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Harga_Menu, Jumlah_Beli) VALUES (?, ?, ?, ?)")) {
+                pst.setString(1, id_trans);
+                pst.setString(2, id_menu);
+                pst.setString(3, harga_menu);
+                pst.setString(4, jumlah_item);
+
+                int k = pst.executeUpdate();
+                if (k == 1) {
+                    JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
+                }
+                loadTabel(); // Memuat ulang data di tabel
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Terjadi error saat menambahkan detail transaksi: " + e.getMessage());
+            }
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
         }
+
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void mejaValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mejaValueActionPerformed
@@ -1795,12 +1905,9 @@ public class kasirForm extends javax.swing.JFrame {
             String jenis_pesan = (String) jenisValue.getSelectedItem();
             String no_meja = mejaValue.getText().trim();
             String jumlah_cust = jumlahCust.getText().trim();
-            String total = priceTotalValue.getText().trim();
-            String ppn = totalPPNValue.getText().trim();
-            String service = serviceTotalValue.getText().trim();
             String status = "Unpaid";
             String pegawai = (String) employeeValue.getSelectedItem();
-            String subTotal = subTotalValue.getText().trim();
+            String total = priceTotalValue.getText().trim();
 
             if (id_trans.isEmpty())  {
                 JOptionPane.showMessageDialog(this, "Harap isi ID Transaksi!");
@@ -1822,20 +1929,16 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
 
-            pst = getKoneksi().prepareStatement("INSERT INTO transaksi (no_transaksi, tanggal_transaksi, waktu_pemesanan,nama_customer, jenis_pemesanan, nomor_meja, jumlah_customer, total_transaksi, total_ppn, total_service, status_transaksi, id_pegawai, sub_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            pst.setString(1, id_trans);
-            pst.setString(2, tanggal);
-            pst.setString(3, waktu_pesan);
-            pst.setString(4, customer);
-            pst.setString(5, jenis_pesan);
-            pst.setString(6, no_meja);
-            pst.setString(7, jumlah_cust);
-            pst.setString(8, total);
-            pst.setString(9, ppn);
-            pst.setString(10, service);
-            pst.setString(11, status);
-            pst.setString(12, pegawai);
-            pst.setString(13, subTotal);
+            pst = getKoneksi().prepareStatement("UPDATE transaksi SET tanggal_transaksi=?, waktu_pemesanan=?, nama_customer=?, jenis_pemesanan=?, nomor_meja=?, jumlah_customer=?, total_harga=?,  status_transaksi=?, id_pegawai=? WHERE no_transaksi=?");
+            pst.setString(10, id_trans);
+            pst.setString(1, tanggal);
+            pst.setString(2, waktu_pesan);
+            pst.setString(3, customer);
+            pst.setString(4, jenis_pesan);
+            pst.setString(5, no_meja);
+            pst.setString(6, jumlah_cust);
+            pst.setString(7, total);
+            pst.setString(8, status);
             
             
 
@@ -1854,7 +1957,7 @@ public class kasirForm extends javax.swing.JFrame {
             rs.close();
             p.close();
             
-            pst.setString(12, id_pegawai);
+            pst.setString(9, id_pegawai);
 
             int k = pst.executeUpdate();
             if (k == 1) {
@@ -1904,6 +2007,16 @@ public class kasirForm extends javax.swing.JFrame {
             try {
                 Connection c = getKoneksi();
 
+                // Menghapus data dari tabel detail_transaksi yang terkait dengan no_transaksi
+                String deleteDetailSql = "DELETE FROM detail_transaksi WHERE Nomor_Transaksi = ?";
+                PreparedStatement deleteDetailPst = c.prepareStatement(deleteDetailSql);
+                deleteDetailPst.setString(1, id_transaksi);
+                int deletedDetails = deleteDetailPst.executeUpdate();
+
+                if (deletedDetails > 0) {
+                    JOptionPane.showMessageDialog(this, "Data detail transaksi berhasil dihapus!");
+                }
+
                 // Mengecek apakah ada data pembayaran dengan id_transaksi yang sama
                 String checkPaymentSql = "SELECT * FROM pembayaran WHERE no_transaksi = ?";
                 PreparedStatement checkPaymentPst = c.prepareStatement(checkPaymentSql);
@@ -1935,23 +2048,13 @@ public class kasirForm extends javax.swing.JFrame {
 
                 pst.close();
                 checkPaymentPst.close();
+                deleteDetailPst.close();
 
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
             }
         }
-        
-//        String filePath = "D:\\Asa\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf";
-//        File file = new File(filePath);
-//        if (file.exists()) {
-//            if (file.delete()) {
-//                System.out.println("File berhasil dihapus.");
-//            } else {
-//                System.out.println("Gagal menghapus file.");
-//            }
-//        } else {
-//            System.out.println("File tidak ditemukan.");
-//        }
+
 
     }//GEN-LAST:event_buttonHapusRiwayatActionPerformed
 
