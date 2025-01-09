@@ -13,7 +13,6 @@ import com.itextpdf.text.pdf.draw.LineSeparator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import javax.swing.*;
@@ -23,14 +22,11 @@ import java.util.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import PDFDisplay.PDFDisplay;
 
 public class kasirForm extends javax.swing.JFrame {
     
-    
-    
-    public static void createPDF(int id){
-        int id_transaksi = id;
-
+    public static void createPDF(int id_transaksi){
         String tanggal = "";
         String waktu_pesan = "";
         String nama_customer = "";
@@ -38,23 +34,17 @@ public class kasirForm extends javax.swing.JFrame {
         String no_meja = "";
         String jumlah_cust = "";
         String total = "";
-        String ppn = "";
-        String service = "";
         String pegawai = "";
         String id_pegawai = "";
         String waktu_bayar = "";
         String metode_bayar = "";
         String jumlah_bayar = "";
-        String sub_total = "";
-      
-      
-        try {
 
+        try {
             String sql = "SELECT * FROM transaksi WHERE no_transaksi = ?";
             PreparedStatement ps = koneksi.prepareStatement(sql);
             ps.setInt(1, id_transaksi); 
             ResultSet rs = ps.executeQuery();
-            
 
             if (rs.next()) {
                 tanggal = rs.getString("tanggal_transaksi");
@@ -63,31 +53,24 @@ public class kasirForm extends javax.swing.JFrame {
                 jenis_pesan = rs.getString("jenis_pemesanan");
                 no_meja = rs.getString("nomor_meja");
                 jumlah_cust = rs.getString("jumlah_customer");
-                total = rs.getString("total_transaksi");
-                ppn = rs.getString("total_ppn");
-                service = rs.getString("total_service");
+                total = rs.getString("total_harga");
                 id_pegawai = rs.getString("id_pegawai");
-                sub_total = rs.getString("sub_total");
- 
-                } else {
-                    System.out.println("Transaksi dengan ID " + id_transaksi + " tidak ditemukan (load data).");
-                }
+            } else {
+                System.out.println("Transaksi dengan ID " + id_transaksi + " tidak ditemukan (load data).");
+            }
 
-            
             rs.close();
             ps.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         } 
-        
-        try {
 
+        try {
             String sql = "SELECT nama_pegawai FROM pegawai WHERE id_pegawai= ?";
             PreparedStatement ps = koneksi.prepareStatement(sql);
             ps.setString(1, id_pegawai); 
             ResultSet rs = ps.executeQuery();
-            
 
             if (rs.next()) {
                 pegawai = rs.getString("nama_pegawai");
@@ -95,21 +78,18 @@ public class kasirForm extends javax.swing.JFrame {
                 System.out.println("Pegawai dengan ID " + id_pegawai + " tidak ditemukan (load nama pegawai).");
             }
 
-            
             rs.close();
             ps.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         } 
-        
-        try {
 
+        try {
             String sql = "SELECT * FROM pembayaran WHERE no_transaksi= ?";
             PreparedStatement ps = koneksi.prepareStatement(sql);
             ps.setInt(1, id_transaksi); 
             ResultSet rs = ps.executeQuery();
-            
 
             if (rs.next()) {
                 waktu_bayar = rs.getString("waktu_pembayaran");
@@ -119,18 +99,59 @@ public class kasirForm extends javax.swing.JFrame {
                 System.out.println("Transaksi dengan ID " + id_transaksi + " tidak ditemukan (load pembayaran).");
             }
 
-            
             rs.close();
             ps.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         } 
-      
-      
+
+        float subtotal = 0f;
+        try {
+            String sql = "SELECT * FROM detail_transaksi WHERE Nomor_Transaksi = ?";
+            PreparedStatement ps = koneksi.prepareStatement(sql);
+            ps.setInt(1, id_transaksi); 
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String id_menu = rs.getString("ID_Menu");
+                String qty = rs.getString("Jumlah_Beli");
+
+                String sqlMenu = "SELECT harga_menu FROM menu WHERE id_menu = ?";
+                PreparedStatement p = koneksi.prepareStatement(sqlMenu);
+                p.setString(1, id_menu); 
+                ResultSet r = p.executeQuery();
+
+                if (r.next()) {
+                    float harga = r.getFloat("harga_menu");
+                    float qtyValue = Float.parseFloat(qty);
+                    subtotal += harga * qtyValue;
+                } else {
+                    System.out.println("Menu dengan ID " + id_menu + " tidak ditemukan.");
+                }
+            }
+
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        float ppnValue = subtotal * 0.10f; // 10% PPN
+        float serviceValue = subtotal * 0.06f; // 6% Service Tax
+
+        
+        float totalHarga = 0f;
+        try {
+            totalHarga = Float.parseFloat(total); // Ambil total transaksi dari tabel transaksi
+        } catch (NumberFormatException e) {
+            System.out.println("Error konversi total: " + e.getMessage());
+        }
+
+        
         Document document = new Document();
-        try{
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("D:\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf"));
+        try {
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("D:\\Asa\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf"));
             document.open();
 
             com.itextpdf.text.Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
@@ -150,20 +171,22 @@ public class kasirForm extends javax.swing.JFrame {
 
             Paragraph jenisPesan = new Paragraph(jenis_pesan.toString().toUpperCase(), boldFont);
 
-            Paragraph subTotal = new Paragraph("SUBTOTAL: " + sub_total);
-            Paragraph totalPPN = new Paragraph("PPN (10%): " + ppn);
-            Paragraph totalService = new Paragraph("Service Tax (5%): " + service);
+            Paragraph subTotal = new Paragraph("SUBTOTAL: " + subtotal);
+            Paragraph totalPPN = new Paragraph("PPN (10%): " + ppnValue);
+            Paragraph totalService = new Paragraph("Service Tax (6%): " + serviceValue);
 
-            Paragraph totalHarga = new Paragraph("Total: "+total, FontFactory.getFont(FontFactory.HELVETICA, 14, BaseColor.BLACK));
+            Paragraph totalHargaPara = new Paragraph("Total: "+totalHarga, FontFactory.getFont(FontFactory.HELVETICA, 14, BaseColor.BLACK));
 
             Paragraph metode = new Paragraph(metode_bayar + ": " + jumlah_bayar);
-            Paragraph kembalian = new Paragraph("Kembalian: " + (Float.toString(Float.parseFloat(jumlah_bayar)- Float.parseFloat(total))));
+            
+            float totalHargaValue = Float.parseFloat(total);  
+            float kembalianValue = Float.parseFloat(jumlah_bayar) - totalHargaValue; 
+            Paragraph kembalian = new Paragraph("Kembalian: " + String.format("%.2f", kembalianValue));
 
 
             Paragraph closedBill = new Paragraph("Closed Bill");
             Paragraph jamBayar = new Paragraph(waktu_bayar);
-        
-         
+
             namaRestoran.setAlignment(Element.ALIGN_CENTER);
             tagLine.setAlignment(Element.ALIGN_CENTER);
             daerah.setAlignment(Element.ALIGN_CENTER);
@@ -174,8 +197,7 @@ public class kasirForm extends javax.swing.JFrame {
             noTrans.setAlignment(Element.ALIGN_RIGHT);
             closedBill.setAlignment(Element.ALIGN_CENTER);
             jamBayar.setAlignment(Element.ALIGN_CENTER);
-         
-        
+
             PdfPCell cell1 = new PdfPCell(new Phrase(customer));
             cell1.setBorder(PdfPCell.NO_BORDER);
 
@@ -189,7 +211,6 @@ public class kasirForm extends javax.swing.JFrame {
             PdfPCell cell4 = new PdfPCell(new Phrase(waktu));
             cell4.setBorder(PdfPCell.NO_BORDER);
             cell4.setHorizontalAlignment(Element.ALIGN_RIGHT);
-
 
             PdfPTable table = new PdfPTable(2);
             table.setWidthPercentage(100); 
@@ -220,8 +241,9 @@ public class kasirForm extends javax.swing.JFrame {
             detail.addCell(sel2);
             detail.addCell(sel3);
             detail.addCell(sel4);
-         
+
             LineSeparator garis = new LineSeparator();
+            
             garis.setLineWidth(0.5f);
             garis.setLineColor(BaseColor.GRAY );
             kontak.setSpacingAfter(10f);
@@ -230,13 +252,13 @@ public class kasirForm extends javax.swing.JFrame {
             detail.setSpacingBefore(10f);
             detail.setSpacingAfter(10f);
             closedBill.setSpacingBefore(10f);
-
+            
             document.add(namaRestoran);
             document.add(tagLine);
             document.add(daerah);
             document.add(alamat);
             document.add(kontak);
-
+            
             document.add(garis);
 
             if(jenis_pesan.trim().equalsIgnoreCase("Dine In")){
@@ -246,8 +268,7 @@ public class kasirForm extends javax.swing.JFrame {
             document.add(noTrans);
             document.add(table);
             document.add(jenisPesan);
-         
-            //        database
+
             try {
 
                String sql = "SELECT * FROM detail_transaksi WHERE Nomor_Transaksi = ?";
@@ -321,11 +342,11 @@ public class kasirForm extends javax.swing.JFrame {
            } catch (Exception e) {
                e.printStackTrace();
            } 
-        
+
             PdfPCell sel5 = new PdfPCell(new Phrase(subTotal));
             sel5.setBorder(PdfPCell.NO_BORDER);
 
-            PdfPCell sel6 = new PdfPCell(new Phrase(totalHarga));
+            PdfPCell sel6 = new PdfPCell(new Phrase(totalHargaPara));
             sel6.setBorder(PdfPCell.NO_BORDER);
             sel6.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
@@ -352,13 +373,11 @@ public class kasirForm extends javax.swing.JFrame {
             table2.addCell(sel9);
             table2.addCell(sel10);
 
-            
             table2.setSpacingBefore(10f);
             table2.setSpacingAfter(10f);
-            
+
             document.add(table2);
             document.add(garis);
-            
             document.add(closedBill);
             document.add(jamBayar);
 
@@ -367,6 +386,20 @@ public class kasirForm extends javax.swing.JFrame {
         } catch (DocumentException | FileNotFoundException e){
             System.out.println("Error: "+e);
         }
+    }
+
+    public void showPdfViewer(int id_transaksi) {
+        JFrame pdfFrame = new JFrame("PDF Display");
+        pdfFrame.setSize(800, 600);
+        pdfFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        PDFDisplay pdfDisplay = new PDFDisplay(id_transaksi); 
+        pdfFrame.add(pdfDisplay);
+        
+        pdfFrame.setLocationRelativeTo(null);
+
+        pdfFrame.setVisible(true);
+    
     }
 
     static Connection koneksi;
@@ -561,13 +594,6 @@ public class kasirForm extends javax.swing.JFrame {
                     PreparedStatement ps = koneksi.prepareStatement(sqlBayar);
                     ps.setInt(1, r.getInt("no_transaksi"));
                     ResultSet rs = ps.executeQuery();
-
-                    if (rs.next()) {
-                        waktu_bayar = rs.getString("waktu_pembayaran");
-                        metode_bayar = rs.getString("metode_pembayaran");
-                    } else {
-                        System.out.println("Transaksi dengan ID " + r.getInt("no_transaksi") + " tidak ditemukan (load pembayaran).");
-                    }
 
                     rs.close();
                     ps.close();
@@ -1512,6 +1538,7 @@ public class kasirForm extends javax.swing.JFrame {
                 String statusPembayaran = rs.getString("status_transaksi");
                 if ("Paid".equalsIgnoreCase(statusPembayaran)) {
                     JOptionPane.showMessageDialog(this, "Transaksi sudah pernah diproses, tidak dapat diproses lagi!");
+                    showPdfViewer(Integer.parseInt(id_transaksi));
                     return; // Batalkan proses lebih lanjut
                 }
             }
@@ -1553,6 +1580,7 @@ public class kasirForm extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Gagal memproses transaksi!");
                 }
                 loadRiwayat();
+                showPdfViewer(Integer.parseInt(id_transaksi));
                 pst.close();
                 p.close();
             } catch (SQLException e) {
@@ -2054,6 +2082,19 @@ public class kasirForm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
             }
         }
+        
+        String pdfPath = "D:\\Asa\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf";
+        File pdfFile = new File(pdfPath);
+
+        if (pdfFile.exists()) {
+            if (pdfFile.delete()) {
+                JOptionPane.showMessageDialog(this, "File PDF transaksi berhasil dihapus!");
+            } else {
+                JOptionPane.showMessageDialog(this, "File PDF transaksi gagal dihapus!");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "File PDF tidak ditemukan!");
+        }
 
 
     }//GEN-LAST:event_buttonHapusRiwayatActionPerformed
@@ -2311,6 +2352,17 @@ public class kasirForm extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(kasirForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
