@@ -130,7 +130,7 @@ public class kasirForm extends javax.swing.JFrame {
       
         Document document = new Document();
         try{
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("D:\\Asa\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf"));
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("D:\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf"));
             document.open();
 
             com.itextpdf.text.Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
@@ -437,21 +437,21 @@ public class kasirForm extends javax.swing.JFrame {
 
             while (r.next()) {
                 String id_menu = r.getString("ID_Menu");
+                String harga_menu = r.getString("Harga_Menu");
                 String jumlah_beli_str = r.getString("Jumlah_beli");
 
-                String queryMenu = "SELECT nama_menu, jenis_menu, harga_menu FROM menu WHERE id_menu = ?";
+                String queryMenu = "SELECT nama_menu, jenis_menu FROM menu WHERE id_menu = ?";
                 pst = c.prepareStatement(queryMenu);
                 pst.setString(1, id_menu);
                 ResultSet rs = pst.executeQuery();
 
                 String nama_menu = "";
                 String jenis_menu = "";
-                String harga_menu = "";
 
                 if (rs.next()) {
                     nama_menu = rs.getString("nama_menu");
                     jenis_menu = rs.getString("jenis_menu");
-                    harga_menu = rs.getString("harga_menu");
+                    
                 } else {
                     JOptionPane.showMessageDialog(this, "Menu tidak ditemukan untuk ID_Menu: " + id_menu);
                     continue;
@@ -669,8 +669,6 @@ public class kasirForm extends javax.swing.JFrame {
         resetFormKasir();
     }
     
-    
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1301,10 +1299,10 @@ public class kasirForm extends javax.swing.JFrame {
                             .addComponent(kembalianBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel19)
                             .addComponent(metodeBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel14))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(buttonPrint)
-                .addContainerGap(246, Short.MAX_VALUE))
+                            .addComponent(jLabel14))
+                        .addGap(18, 18, 18)
+                        .addComponent(buttonPrint)))
+                .addContainerGap(262, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("RIWAYAT TRANSAKSI", jPanel2);
@@ -1438,7 +1436,7 @@ public class kasirForm extends javax.swing.JFrame {
                             .addComponent(btnUbah)
                             .addComponent(btnHapus)))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(348, Short.MAX_VALUE))
+                .addContainerGap(382, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("MENU", jPanel3);
@@ -1451,9 +1449,7 @@ public class kasirForm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 723, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 34, Short.MAX_VALUE))
+            .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 757, Short.MAX_VALUE)
         );
 
         pack();
@@ -1740,20 +1736,23 @@ public class kasirForm extends javax.swing.JFrame {
             }
 
             String id_menu = "";
-            pst = getKoneksi().prepareStatement("SELECT id_menu FROM menu WHERE nama_menu = ?");
+            String harga_menu = "";
+            pst = getKoneksi().prepareStatement("SELECT id_menu, harga_menu FROM menu WHERE nama_menu = ?");
             pst.setString(1, nama_menu);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 id_menu = rs.getString("id_menu");
+                harga_menu = rs.getString("harga_menu");
             } else {
                 JOptionPane.showMessageDialog(this, "Menu tidak ditemukan!");
                 return;
             }
 
-            pst = getKoneksi().prepareStatement("INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Jumlah_Beli) VALUES (?, ?, ?)");
+            pst = getKoneksi().prepareStatement("INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Harga_Menu, Jumlah_Beli) VALUES (?, ?, ?, ?)");
             pst.setString(1, id_trans);
             pst.setString(2, id_menu);
-            pst.setString(3, jumlah_item);
+            pst.setString(3, harga_menu);
+            pst.setString(4, jumlah_item);
 
             int k = pst.executeUpdate();
             if (k == 1) {
@@ -1972,7 +1971,6 @@ public class kasirForm extends javax.swing.JFrame {
         jenisMenu.setSelectedItem(jenis);
         hargaMenu.setText(harga);
         deskripsiMenu.setText(deskripsi);
-
     }//GEN-LAST:event_tableMenuMouseClicked
 
     private void jenisMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jenisMenuActionPerformed
