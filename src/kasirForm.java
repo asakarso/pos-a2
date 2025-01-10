@@ -1427,7 +1427,7 @@ public class kasirForm extends javax.swing.JFrame {
         try {
             Connection c = getKoneksi();
 
-            String[] dbColumns = {"nomor_transaksi", "tanggal_transaksi", "waktu_pemesanan", "waktu_pembayaran", "nama_customer",
+            String[] dbColumns = {"no_transaksi", "tanggal_transaksi", "waktu_pemesanan", "waktu_pembayaran", "nama_customer",
                 "metode_pembayaran", "jenis_pemesanan", "jumlah_customer", "total_harga", "total_ppn",
                 "total_service", "nomor_meja", "status_transaksi", "id_pegawai"};
 
@@ -1436,9 +1436,9 @@ public class kasirForm extends javax.swing.JFrame {
 
             // Kolom waktu_pembayaran dan metode_pembayaran diambil dari tabel pembayaran
             if (selectedColumn == 3 || selectedColumn == 5) {
-                sql = "UPDATE pembayaran SET " + dbColumnName + " = ? WHERE nomor_transaksi = ?";
+                sql = "UPDATE pembayaran SET " + dbColumnName + " = ? WHERE no_transaksi = ?";
             } else {
-                sql = "UPDATE transaksi SET " + dbColumnName + " = ? WHERE nomor_transaksi = ?";
+                sql = "UPDATE transaksi SET " + dbColumnName + " = ? WHERE no_transaksi = ?";
             }
 
             PreparedStatement ps = c.prepareStatement(sql);
