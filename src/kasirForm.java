@@ -1394,50 +1394,62 @@ public class kasirForm extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonPrintActionPerformed
 
     private void buttonUbahRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUbahRiwayatActionPerformed
-     int selectedRow = tabelRiwayat.getSelectedRow();
+        int selectedRow = tabelRiwayat.getSelectedRow();
         int selectedColumn = tabelRiwayat.getSelectedColumn();
 
         if (selectedRow == -1 || selectedColumn == -1) {
-           JOptionPane.showMessageDialog(this, "Pilih baris dan kolom yang ingin diubah.", "Peringatan", JOptionPane.WARNING_MESSAGE);
-           return;
+            JOptionPane.showMessageDialog(this, "Pilih baris dan kolom yang ingin diubah.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
+        // Kolom yang tidak dapat diubah
         if (selectedColumn == 0) {
-           JOptionPane.showMessageDialog(this, "Kolom Nomor Transaksi tidak dapat diubah.", "Peringatan", JOptionPane.WARNING_MESSAGE);
-           return;
+            JOptionPane.showMessageDialog(this, "Kolom Nomor Transaksi tidak dapat diubah.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (selectedColumn == 8 || selectedColumn == 9 || selectedColumn == 10) {
+            JOptionPane.showMessageDialog(this, "Kolom Total Harga, PPN, atau Service tidak dapat diubah.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
         int nomorTransaksi = (int) tabelRiwayat.getValueAt(selectedRow, 0);
         String columnName = tabelRiwayat.getColumnName(selectedColumn);
 
-
+        // Masukkan nilai baru
         String newValue = JOptionPane.showInputDialog(this, "Masukkan nilai baru untuk " + columnName + ":", tabelRiwayat.getValueAt(selectedRow, selectedColumn));
 
         if (newValue == null) {
-           JOptionPane.showMessageDialog(this, "Proses perubahan dibatalkan.", "Informasi", JOptionPane.INFORMATION_MESSAGE);
-           return;
+            JOptionPane.showMessageDialog(this, "Proses perubahan dibatalkan.", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
 
         try {
             Connection c = getKoneksi();
 
-            String[] dbColumns = {"nomor_transaksi", "tanggal_transaksi", "waktu_pemesanan", "waktu_pembayaran", "nama_customer", 
-                                   "metode_pembayaran", "jenis_pemesanan", "jumlah_customer", "total_transaksi", "total_ppn", 
-                                   "total_service", "nomor_meja", "status_transaksi", "id_pegawai"};
+            String[] dbColumns = {"nomor_transaksi", "tanggal_transaksi", "waktu_pemesanan", "waktu_pembayaran", "nama_customer",
+                "metode_pembayaran", "jenis_pemesanan", "jumlah_customer", "total_harga", "total_ppn",
+                "total_service", "nomor_meja", "status_transaksi", "id_pegawai"};
 
             String dbColumnName = dbColumns[selectedColumn];
+            String sql;
 
-            String sql = "UPDATE transaksi SET " + dbColumnName + " = ? WHERE nomor_transaksi = ?";
+            // Kolom waktu_pembayaran dan metode_pembayaran diambil dari tabel pembayaran
+            if (selectedColumn == 3 || selectedColumn == 5) {
+                sql = "UPDATE pembayaran SET " + dbColumnName + " = ? WHERE nomor_transaksi = ?";
+            } else {
+                sql = "UPDATE transaksi SET " + dbColumnName + " = ? WHERE nomor_transaksi = ?";
+            }
+
             PreparedStatement ps = c.prepareStatement(sql);
 
-            if (selectedColumn == 1) {
-                ps.setDate(1, java.sql.Date.valueOf(newValue)); 
-            } else if (selectedColumn == 2 || selectedColumn == 3) {
-                ps.setTime(1, java.sql.Time.valueOf(newValue)); 
-            } else if (selectedColumn == 7 || selectedColumn == 11 || selectedColumn == 13) {
-                ps.setInt(1, Integer.parseInt(newValue)); 
-            } else if (selectedColumn == 8 || selectedColumn == 9 || selectedColumn == 10) {
-                ps.setDouble(1, Double.parseDouble(newValue)); 
+            // Penyesuaian tipe data untuk input
+            if (selectedColumn == 1) { // tanggal_transaksi
+                ps.setDate(1, java.sql.Date.valueOf(newValue));
+            } else if (selectedColumn == 2 || selectedColumn == 3) { // waktu_pemesanan, waktu_pembayaran
+                ps.setTime(1, java.sql.Time.valueOf(newValue));
+            } else if (selectedColumn == 7 || selectedColumn == 11 || selectedColumn == 13) { // jumlah_customer, nomor_meja, id_pegawai
+                ps.setInt(1, Integer.parseInt(newValue));
             } else {
                 ps.setString(1, newValue);
             }
@@ -1454,10 +1466,12 @@ public class kasirForm extends javax.swing.JFrame {
             ps.close();
             c.close();
 
+            // Memuat ulang tabel riwayat
             loadRiwayat();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+
     }//GEN-LAST:event_buttonUbahRiwayatActionPerformed
 
     private void idTransaksiKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idTransaksiKeyReleased
