@@ -602,7 +602,6 @@ public class kasirForm extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
 
-                // Ambil data dari detail_transaksi dan hitung subtotal
                 try {
                     String sqlDetail = "SELECT * FROM detail_transaksi WHERE Nomor_Transaksi = ?";
                     PreparedStatement psDetail = koneksi.prepareStatement(sqlDetail);
@@ -610,15 +609,12 @@ public class kasirForm extends javax.swing.JFrame {
                     ResultSet rsDetail = psDetail.executeQuery();
 
                     while (rsDetail.next()) {
-                        // Hitung subtotal
                         subtotal += rsDetail.getDouble("Harga_Menu") * rsDetail.getInt("Jumlah_Beli");
                     }
 
-                    // Hitung PPN dan Service
-                    ppn = subtotal * 0.10; // PPN 10%
-                    service = subtotal * 0.06; // Service 6%
+                    ppn = subtotal * 0.10; 
+                    service = subtotal * 0.06; 
 
-                    // Ambil nilai total_harga dari tabel transaksi
                     total_harga = r.getDouble("total_harga");
 
                     rsDetail.close();
@@ -627,8 +623,7 @@ public class kasirForm extends javax.swing.JFrame {
                     e.printStackTrace();
                 }
 
-                // Tambahkan data ke tabel
-                Object[] o = new Object[14]; // Menjaga kolom tetap 14, tanpa kolom subtotal
+                Object[] o = new Object[14]; 
                 o[0] = r.getInt("no_transaksi");
                 o[1] = r.getDate("tanggal_transaksi");
                 o[2] = r.getTime("waktu_pemesanan");
@@ -637,12 +632,12 @@ public class kasirForm extends javax.swing.JFrame {
                 o[5] = metode_bayar;
                 o[6] = r.getString("jenis_pemesanan");
                 o[7] = r.getInt("jumlah_customer");
-                o[8] = total_harga; // Menampilkan subtotal sebagai perhitungan, tetapi tidak sebagai kolom
-                o[9] = ppn; // Menampilkan PPN
-                o[10] = service; // Menampilkan service
-                o[11] = no_meja; // Menampilkan total harga
-                o[12] = status; // Menampilkan diskon
-                o[13] = pegawai; // Menampilkan pegawai yang menangani transaksi
+                o[8] = total_harga; 
+                o[9] = ppn; 
+                o[10] = service; 
+                o[11] = no_meja; 
+                o[12] = status; 
+                o[13] = pegawai; 
                 kasirForm.addRow(o);
             }
 
@@ -654,44 +649,7 @@ public class kasirForm extends javax.swing.JFrame {
         }
     }
 
-
-
     
-    public void loadMenu(){
-        DefaultTableModel menuForm = (DefaultTableModel)tableMenu.getModel();
-        menuForm.getDataVector().removeAllElements();
-        menuForm.fireTableDataChanged();
-        try{
-            Connection c = getKoneksi();
-            Statement s = c.createStatement();
-            String sql = "SELECT * FROM menu";
-            ResultSet r = s.executeQuery(sql);
-            while(r.next()){
-                Object[] o = new Object [5];
-                o[0] = r.getString("id_menu");
-                o[1] = r.getString("nama_menu");
-                o[2] = r.getString("jenis_menu");
-                o[3] = r.getString("harga_menu");
-                o[4] = r.getString("deskripsi_menu");
-                menuForm.addRow(o);
-            }
-            
-            r.close();
-            s.close();
-        } catch(SQLException e){
-            System.out.println("terjadi Error");
-        }
-        
-    }
-    
-    private void clearFields() {
-        idMenu.setText("");
-        namaMenu.setText("");
-        jenisMenu.setSelectedIndex(0);
-        hargaMenu.setText("");
-        deskripsiMenu.setText("");
-    }
-
     public void resetFormKasir() {
         idTransaksi.setText("");
         mejaValue.setText("0");
@@ -721,7 +679,6 @@ public class kasirForm extends javax.swing.JFrame {
         menuCombo();
         loadTabel();
         loadRiwayat();
-        loadMenu();
         resetFormKasir();
     }
     
@@ -803,22 +760,6 @@ public class kasirForm extends javax.swing.JFrame {
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
         totalHarga = new javax.swing.JTextField();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        tableMenu = new javax.swing.JTable();
-        jenisMenu = new javax.swing.JComboBox<>();
-        idMenu = new javax.swing.JTextField();
-        namaMenu = new javax.swing.JTextField();
-        hargaMenu = new javax.swing.JTextField();
-        deskripsiMenu = new javax.swing.JTextField();
-        btnUbah = new javax.swing.JButton();
-        btnHapus = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        btnTambah = new javax.swing.JButton();
 
         jButton4.setText("jButton4");
 
@@ -1355,147 +1296,13 @@ public class kasirForm extends javax.swing.JFrame {
                             .addComponent(kembalianBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel19)
                             .addComponent(metodeBayar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel14))
-                        .addGap(18, 18, 18)
-                        .addComponent(buttonPrint)))
-                .addContainerGap(262, Short.MAX_VALUE))
+                            .addComponent(jLabel14))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(buttonPrint)
+                .addContainerGap(246, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("RIWAYAT TRANSAKSI", jPanel2);
-
-        tableMenu.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID Menu", "Nama Menu", "Jenis Menu", "Harga", "Deskripsi"
-            }
-        ));
-        tableMenu.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableMenuMouseClicked(evt);
-            }
-        });
-        jScrollPane3.setViewportView(tableMenu);
-
-        jenisMenu.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Signature", "Add On", "Drink"}));
-        jenisMenu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jenisMenuActionPerformed(evt);
-            }
-        });
-
-        namaMenu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                namaMenuActionPerformed(evt);
-            }
-        });
-
-        btnUbah.setText("Ubah");
-        btnUbah.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnUbahActionPerformed(evt);
-            }
-        });
-
-        btnHapus.setText("Hapus");
-        btnHapus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnHapusActionPerformed(evt);
-            }
-        });
-
-        jLabel5.setText("Id Menu");
-
-        jLabel3.setText("Nama Menu");
-
-        jLabel4.setText("Jenis");
-
-        jLabel8.setText("Harga");
-
-        jLabel9.setText("Deskripsi");
-
-        btnTambah.setText("Tambah");
-        btnTambah.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTambahActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(221, 221, 221)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addComponent(btnTambah)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btnUbah)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btnHapus))
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(namaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jenisMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(hargaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(deskripsiMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(idMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(37, 37, 37)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 851, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(205, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(idMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(namaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jenisMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(hargaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(deskripsiMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(27, 27, 27)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnTambah)
-                            .addComponent(btnUbah)
-                            .addComponent(btnHapus)))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(382, Short.MAX_VALUE))
-        );
-
-        jTabbedPane2.addTab("MENU", jPanel3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1512,7 +1319,6 @@ public class kasirForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrintActionPerformed
-        // TODO add your handling code here:
         int selectedRow = tabelRiwayat.getSelectedRow();
 
         if (selectedRow == -1) {
@@ -1526,8 +1332,6 @@ public class kasirForm extends javax.swing.JFrame {
         String waktu_bayar = waktuBayar.getText().trim();
 
         
-
-        // Cek status pembayaran sebelumnya
         try {
             String checkStatusSql = "SELECT status_transaksi FROM transaksi WHERE no_transaksi = ?";
             PreparedStatement checkStatusPst = getKoneksi().prepareStatement(checkStatusSql);
@@ -1539,13 +1343,13 @@ public class kasirForm extends javax.swing.JFrame {
                 if ("Paid".equalsIgnoreCase(statusPembayaran)) {
                     JOptionPane.showMessageDialog(this, "Transaksi sudah pernah diproses, tidak dapat diproses lagi!");
                     showPdfViewer(Integer.parseInt(id_transaksi));
-                    return; // Batalkan proses lebih lanjut
+                    return; 
                 }
             }
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Terjadi error saat mengecek status pembayaran: " + e.getMessage());
-            return; // Batalkan proses lebih lanjut jika terjadi error
+            return; 
         }
         
         if (jumlah_bayar.equals("0") && metode_bayar.equals("Cash")) {
@@ -1587,7 +1391,6 @@ public class kasirForm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
             }
         }
-
     }//GEN-LAST:event_buttonPrintActionPerformed
 
     private void buttonUbahRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonUbahRiwayatActionPerformed
@@ -1658,7 +1461,6 @@ public class kasirForm extends javax.swing.JFrame {
     }//GEN-LAST:event_buttonUbahRiwayatActionPerformed
 
     private void idTransaksiKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idTransaksiKeyReleased
-        // TODO add your handling code here:
         loadTabel();
     }//GEN-LAST:event_idTransaksiKeyReleased
 
@@ -1688,7 +1490,6 @@ public class kasirForm extends javax.swing.JFrame {
     }//GEN-LAST:event_discValueKeyReleased
 
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
-        // TODO add your handling code here:
         String id_trans = idTransaksi.getText().trim();
 
         if (id_trans.isEmpty()) {
@@ -1709,7 +1510,6 @@ public class kasirForm extends javax.swing.JFrame {
             }
 
             try {
-                // Cek apakah nama_customer NULL
                 String checkCustomerSql = "SELECT nama_customer FROM transaksi WHERE no_transaksi = ?";
                 PreparedStatement checkCustomerPst = c.prepareStatement(checkCustomerSql);
                 checkCustomerPst.setString(1, id_trans);
@@ -1719,7 +1519,6 @@ public class kasirForm extends javax.swing.JFrame {
                     String namaCustomer = rs.getString("nama_customer");
 
                     if (namaCustomer != null) {
-                        // Jika nama_customer tidak NULL (sudah diproses), beri pesan gagal
                         JOptionPane.showMessageDialog(this,
                                 "Gagal menghapus! Transaksi sudah pernah diproses.",
                                 "Kesalahan",
@@ -1734,14 +1533,12 @@ public class kasirForm extends javax.swing.JFrame {
                     return;
                 }
 
-                // Hapus data di tabel detail_transaksi
                 String sqlDetail = "DELETE FROM detail_transaksi WHERE Nomor_transaksi = ?";
                 PreparedStatement pDetail = c.prepareStatement(sqlDetail);
                 pDetail.setString(1, id_trans);
 
                 int rowsAffectedDetail = pDetail.executeUpdate();
                 if (rowsAffectedDetail > 0) {
-                    // Setelah berhasil menghapus data detail_transaksi, hapus data di tabel transaksi
                     String sqlTransaksi = "DELETE FROM transaksi WHERE no_transaksi = ?";
                     PreparedStatement pTransaksi = c.prepareStatement(sqlTransaksi);
                     pTransaksi.setString(1, id_trans);
@@ -1753,8 +1550,8 @@ public class kasirForm extends javax.swing.JFrame {
                                 "Sukses",
                                 JOptionPane.INFORMATION_MESSAGE);
 
-                        loadTabel();  // Memuat ulang data di tabel
-                        // resetForm();  // Opsional, jika Anda ingin mereset form setelah penghapusan
+                        loadTabel(); 
+                        resetFormKasir();
                     } else {
                         JOptionPane.showMessageDialog(this,
                                 "Tidak ada data ditemukan untuk ID Transaksi: " + id_trans + " di tabel transaksi.",
@@ -1777,12 +1574,9 @@ public class kasirForm extends javax.swing.JFrame {
                 e.printStackTrace();
             }
         }
-
-
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        // TODO add your handling code here:
         int selectedRow = tabelTransaksi.getSelectedRow();
 
         if (selectedRow == -1) {
@@ -1801,7 +1595,6 @@ public class kasirForm extends javax.swing.JFrame {
 
             Connection c = getKoneksi();
 
-            // Cek status transaksi terlebih dahulu
             String checkStatusSql = "SELECT nama_customer FROM transaksi WHERE no_transaksi = ?";
             PreparedStatement checkStatusPst = c.prepareStatement(checkStatusSql);
             checkStatusPst.setString(1, id_trans);
@@ -1815,7 +1608,6 @@ public class kasirForm extends javax.swing.JFrame {
                 }
             }
 
-            // Lanjutkan dengan penghapusan item dari detail_transaksi
             String sql = "DELETE FROM detail_transaksi WHERE Nomor_Transaksi = ? AND ID_Menu = ?";
             pst = c.prepareStatement(sql);
             pst.setString(1, id_trans);
@@ -1824,7 +1616,6 @@ public class kasirForm extends javax.swing.JFrame {
             int k = pst.executeUpdate();
 
             if (k > 0) {
-                // Cek jika ID Transaksi hanya memiliki satu item di tabel detail_transaksi
                 String checkSql = "SELECT COUNT(*) FROM detail_transaksi WHERE Nomor_Transaksi = ?";
                 PreparedStatement checkPst = c.prepareStatement(checkSql);
                 checkPst.setString(1, id_trans);
@@ -1833,7 +1624,6 @@ public class kasirForm extends javax.swing.JFrame {
                 if (rs.next()) {
                     int itemCount = rs.getInt(1);
                     if (itemCount == 0) {
-                        // Jika tidak ada item lagi, hapus transaksi
                         String deleteTransaksiSql = "DELETE FROM transaksi WHERE no_transaksi = ?";
                         PreparedStatement deleteTransaksiPst = c.prepareStatement(deleteTransaksiSql);
                         deleteTransaksiPst.setString(1, id_trans);
@@ -1841,25 +1631,21 @@ public class kasirForm extends javax.swing.JFrame {
                     }
                 }
 
-                // Hapus baris dari JTable
                 DefaultTableModel model = (DefaultTableModel) tabelTransaksi.getModel();
                 model.removeRow(selectedRow);
 
                 JOptionPane.showMessageDialog(this, "Item berhasil dihapus dari transaksi!");
 
-                loadTabel();  // Memuat ulang data di tabel
+                loadTabel();  
             } else {
                 JOptionPane.showMessageDialog(this, "Gagal menghapus item!");
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
         }
-
-
     }//GEN-LAST:event_removeButtonActionPerformed
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        // TODO add your handling code here:
         try {
             String id_trans = idTransaksi.getText().trim();
             String nama_menu = (String) menuValue.getSelectedItem();
@@ -1870,17 +1656,16 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
 
-            // Periksa apakah transaksi sudah ada
             try (PreparedStatement checkPs = getKoneksi().prepareStatement("SELECT nama_customer FROM transaksi WHERE no_transaksi = ?")) {
                 checkPs.setString(1, id_trans);
                 try (ResultSet checkRs = checkPs.executeQuery()) {
-                    if (checkRs.next()) { // Jika transaksi ditemukan
+                    if (checkRs.next()) { 
                         String namaCustomer = checkRs.getString("nama_customer");
-                        if (namaCustomer != null && !namaCustomer.trim().isEmpty()) { // Jika nama_customer tidak NULL
+                        if (namaCustomer != null && !namaCustomer.trim().isEmpty()) { 
                             JOptionPane.showMessageDialog(this, "Penambahan gagal! Transaksi sudah pernah dibuat.");
                             return;
                         }
-                    } else { // Jika transaksi tidak ditemukan, tambahkan transaksi baru
+                    } else { 
                         try (PreparedStatement insertPs = getKoneksi().prepareStatement(
                                 "INSERT INTO transaksi (no_transaksi) VALUES (?)")) {
                             insertPs.setString(1, id_trans);
@@ -1893,7 +1678,6 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
 
-            // Ambil detail menu dan harga
             String id_menu = "";
             String harga_menu = "";
 
@@ -1914,7 +1698,6 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
 
-            // Cek diskon menu (jika ada dan periode selesai belum lewat)
             try (PreparedStatement pst = getKoneksi().prepareStatement(
                     "SELECT harga_diskon, periode_selesai FROM menu_diskon WHERE id_menu = ?")) {
                 pst.setString(1, id_menu);
@@ -1933,7 +1716,6 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
 
-            // Tambahkan ke tabel detail_transaksi
             try (PreparedStatement pst = getKoneksi().prepareStatement(
                     "INSERT INTO detail_transaksi (Nomor_Transaksi, ID_Menu, Harga_Menu, Jumlah_Beli) VALUES (?, ?, ?, ?)")) {
                 pst.setString(1, id_trans);
@@ -1947,7 +1729,7 @@ public class kasirForm extends javax.swing.JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
                 }
-                loadTabel(); // Memuat ulang data di tabel
+                loadTabel(); 
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, "Terjadi error saat menambahkan detail transaksi: " + e.getMessage());
             }
@@ -1975,7 +1757,6 @@ public class kasirForm extends javax.swing.JFrame {
     }//GEN-LAST:event_custValueActionPerformed
 
     private void buttonProsesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonProsesActionPerformed
-        // TODO add your handling code here:
         try {
             String id_trans = idTransaksi.getText().trim();
 
@@ -2011,14 +1792,13 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
 
-            // Periksa apakah transaksi sudah ada dan nama_customer sudah terisi
             try (PreparedStatement checkPs = getKoneksi().prepareStatement(
                     "SELECT nama_customer FROM transaksi WHERE no_transaksi = ?")) {
                 checkPs.setString(1, id_trans);
                 try (ResultSet checkRs = checkPs.executeQuery()) {
-                    if (checkRs.next()) { // Jika transaksi ditemukan
+                    if (checkRs.next()) { 
                         String namaCustomer = checkRs.getString("nama_customer");
-                        if (namaCustomer != null && !namaCustomer.trim().isEmpty()) { // Jika nama_customer sudah terisi
+                        if (namaCustomer != null && !namaCustomer.trim().isEmpty()) { 
                             JOptionPane.showMessageDialog(this, "Proses gagal! Transaksi sudah ada.");
                             return;
                         }
@@ -2029,7 +1809,6 @@ public class kasirForm extends javax.swing.JFrame {
                 return;
             }
 
-            // Melanjutkan proses update transaksi jika nama_customer masih kosong
             pst = getKoneksi().prepareStatement("UPDATE transaksi SET tanggal_transaksi=?, waktu_pemesanan=?, nama_customer=?, jenis_pemesanan=?, nomor_meja=?, jumlah_customer=?, total_harga=?,  status_transaksi=?, id_pegawai=? WHERE no_transaksi=?");
             pst.setString(10, id_trans);
             pst.setString(1, tanggal);
@@ -2073,7 +1852,6 @@ public class kasirForm extends javax.swing.JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
         }
-
     }//GEN-LAST:event_buttonProsesActionPerformed
 
     private void employeeValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_employeeValueActionPerformed
@@ -2089,7 +1867,6 @@ public class kasirForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jumlahCustActionPerformed
 
     private void buttonHapusRiwayatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonHapusRiwayatActionPerformed
-        // TODO add your handling code here:
         int selectedRow = tabelRiwayat.getSelectedRow();
 
         if (selectedRow == -1) {
@@ -2108,7 +1885,6 @@ public class kasirForm extends javax.swing.JFrame {
             try {
                 Connection c = getKoneksi();
 
-                // Menghapus data dari tabel detail_transaksi yang terkait dengan no_transaksi
                 String deleteDetailSql = "DELETE FROM detail_transaksi WHERE Nomor_Transaksi = ?";
                 PreparedStatement deleteDetailPst = c.prepareStatement(deleteDetailSql);
                 deleteDetailPst.setString(1, id_transaksi);
@@ -2118,13 +1894,11 @@ public class kasirForm extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Data detail transaksi berhasil dihapus!");
                 }
 
-                // Mengecek apakah ada data pembayaran dengan id_transaksi yang sama
                 String checkPaymentSql = "SELECT * FROM pembayaran WHERE no_transaksi = ?";
                 PreparedStatement checkPaymentPst = c.prepareStatement(checkPaymentSql);
                 checkPaymentPst.setString(1, id_transaksi);
                 ResultSet rs = checkPaymentPst.executeQuery();
 
-                // Jika ada data pembayaran yang berhubungan, hapus dari tabel pembayaran
                 if (rs.next()) {
                     String deletePaymentSql = "DELETE FROM pembayaran WHERE no_transaksi = ?";
                     PreparedStatement deletePaymentPst = c.prepareStatement(deletePaymentSql);
@@ -2134,7 +1908,6 @@ public class kasirForm extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "Data pembayaran terkait berhasil dihapus!");
                 }
 
-                // Menghapus transaksi dari tabel transaksi
                 String sql = "DELETE FROM transaksi WHERE no_transaksi = ?";
                 PreparedStatement pst = c.prepareStatement(sql);
                 pst.setString(1, id_transaksi);
@@ -2156,7 +1929,7 @@ public class kasirForm extends javax.swing.JFrame {
             }
         }
         
-        String pdfPath = "D:\\Asa\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf";
+        String pdfPath = "D:\\PBO\\kasir\\pdf\\transaksi-" + id_transaksi + ".pdf";
         File pdfFile = new File(pdfPath);
 
         if (pdfFile.exists()) {
@@ -2168,135 +1941,9 @@ public class kasirForm extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "File PDF tidak ditemukan!");
         }
-
-
     }//GEN-LAST:event_buttonHapusRiwayatActionPerformed
 
-    private void tableMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMenuMouseClicked
-        // TODO add your handling code here:
-
-        DefaultTableModel menuForm = (DefaultTableModel)tableMenu.getModel();
-
-        String id = menuForm.getValueAt(tableMenu.getSelectedRow(), 0).toString();
-        String nama = menuForm.getValueAt(tableMenu.getSelectedRow(), 1).toString();
-        String jenis = menuForm.getValueAt(tableMenu.getSelectedRow(), 2).toString();
-        String harga = menuForm.getValueAt(tableMenu.getSelectedRow(), 3).toString();
-        String deskripsi = menuForm.getValueAt(tableMenu.getSelectedRow(), 4).toString();
-
-        idMenu.setText(id);
-        namaMenu.setText(nama);
-        jenisMenu.setSelectedItem(jenis);
-        hargaMenu.setText(harga);
-        deskripsiMenu.setText(deskripsi);
-    }//GEN-LAST:event_tableMenuMouseClicked
-
-    private void jenisMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jenisMenuActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jenisMenuActionPerformed
-
-    private void namaMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_namaMenuActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_namaMenuActionPerformed
-
-    private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
-        // TODO add your handling code here:
-        try {
-            String id_menu = idMenu.getText().trim();
-            String jenis_menu = (String) jenisMenu.getSelectedItem();
-            String nama_menu = namaMenu.getText().trim();
-            String harga_menu = hargaMenu.getText().trim();
-            String deskripsi_menu = deskripsiMenu.getText().trim();
-
-            if (id_menu.isEmpty() || nama_menu.isEmpty() || harga_menu.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Harap isi semua kolom wajib!");
-                return;
-            }
-
-            pst = getKoneksi().prepareStatement("UPDATE menu SET jenis_menu = ?, nama_menu = ?, harga_menu = ?, deskripsi_menu = ? WHERE id_menu = ?");
-            pst.setString(1, jenis_menu);
-            pst.setString(2, nama_menu);
-            pst.setString(3, harga_menu);
-            pst.setString(4, deskripsi_menu);
-            pst.setString(5, id_menu);
-
-            int k = pst.executeUpdate();
-            if (k == 1) {
-                JOptionPane.showMessageDialog(this, "Data berhasil diubah!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal mengubah data!");
-            }
-            loadMenu();
-            clearFields();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
-        }
-    }//GEN-LAST:event_btnUbahActionPerformed
-
-    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
-        // TODO add your handling code here:
-        try {
-            String id_menu = idMenu.getText().trim();
-
-            if (id_menu.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Pilih data yang ingin dihapus!");
-                return;
-            }
-
-            int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                pst = getKoneksi().prepareStatement("DELETE FROM menu WHERE id_menu = ?");
-                pst.setString(1, id_menu);
-
-                int k = pst.executeUpdate();
-                if (k == 1) {
-                    JOptionPane.showMessageDialog(this, "Data berhasil dihapus!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Gagal menghapus data!");
-                }
-                loadMenu();
-                clearFields();
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
-        }
-    }//GEN-LAST:event_btnHapusActionPerformed
-
-    private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
-        // TODO add your handling code here:
-        try {
-            String id_menu = idMenu.getText().trim();
-            String jenis_menu = (String) jenisMenu.getSelectedItem();
-            String nama_menu = namaMenu.getText().trim();
-            String harga_menu = hargaMenu.getText().trim();
-            String deskripsi_menu = deskripsiMenu.getText().trim();
-
-            if (id_menu.isEmpty() || nama_menu.isEmpty() || harga_menu.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Harap isi semua kolom wajib!");
-                return;
-            }
-
-            pst = getKoneksi().prepareStatement("INSERT INTO menu (id_menu, jenis_menu, nama_menu, harga_menu, deskripsi_menu) VALUES (?, ?, ?, ?, ?)");
-            pst.setString(1, id_menu);
-            pst.setString(2, jenis_menu);
-            pst.setString(3, nama_menu);
-            pst.setString(4, harga_menu);
-            pst.setString(5, deskripsi_menu);
-
-            int k = pst.executeUpdate();
-            if (k == 1) {
-                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal menambahkan data!");
-            }
-            loadMenu();
-            clearFields();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Terjadi error: " + e.getMessage());
-        }
-    }//GEN-LAST:event_btnTambahActionPerformed
-
     private void tabelRiwayatMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelRiwayatMouseClicked
-        // TODO add your handling code here:
         int selectedRow = tabelRiwayat.getSelectedRow();
         String total_bayar = tabelRiwayat.getValueAt(selectedRow, 8).toString();
 
@@ -2309,7 +1956,6 @@ public class kasirForm extends javax.swing.JFrame {
     }//GEN-LAST:event_tabelRiwayatMouseClicked
 
     private void jumlahBayarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jumlahBayarKeyReleased
-        // TODO add your handling code here:
         int selectedRow = tabelRiwayat.getSelectedRow();
         
         String metode_bayar = (String) metodeBayar.getSelectedItem();
@@ -2332,7 +1978,6 @@ public class kasirForm extends javax.swing.JFrame {
     }//GEN-LAST:event_metodeBayarActionPerformed
 
     private void metodeBayarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_metodeBayarItemStateChanged
-        // TODO add your handling code here:
         String metode_bayar = (String) metodeBayar.getSelectedItem();
         
         if(!metode_bayar.equals("Cash")){
@@ -2447,9 +2092,6 @@ public class kasirForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
-    private javax.swing.JButton btnHapus;
-    private javax.swing.JButton btnTambah;
-    private javax.swing.JButton btnUbah;
     private javax.swing.JButton buttonHapusRiwayat;
     private javax.swing.JButton buttonPrint;
     private javax.swing.JButton buttonProses;
@@ -2458,14 +2100,11 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JLabel custLabel1;
     private javax.swing.JLabel custLabel2;
     private javax.swing.JTextField custValue;
-    private javax.swing.JTextField deskripsiMenu;
     private javax.swing.JLabel discLabel;
     private javax.swing.JTextField discValue;
     private javax.swing.JButton editButton;
     private javax.swing.JLabel employeeLabel;
     private javax.swing.JComboBox<String> employeeValue;
-    private javax.swing.JTextField hargaMenu;
-    private javax.swing.JTextField idMenu;
     private javax.swing.JTextField idTransaksi;
     private javax.swing.JLabel invoiceLabel;
     private javax.swing.JButton jButton4;
@@ -2482,23 +2121,15 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTextField jamValue;
-    private javax.swing.JComboBox<String> jenisMenu;
     private javax.swing.JComboBox<String> jenisValue;
     private javax.swing.JTextField jumlahBayar;
     private javax.swing.JTextField jumlahCust;
@@ -2507,7 +2138,6 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JLabel menuLabel;
     private javax.swing.JComboBox<String> menuValue;
     private javax.swing.JComboBox<String> metodeBayar;
-    private javax.swing.JTextField namaMenu;
     private java.awt.PopupMenu popupMenu1;
     private java.awt.PopupMenu popupMenu2;
     private java.awt.PopupMenu popupMenu3;
@@ -2525,7 +2155,6 @@ public class kasirForm extends javax.swing.JFrame {
     private javax.swing.JTextField subTotalValue;
     private javax.swing.JTable tabelRiwayat;
     private javax.swing.JTable tabelTransaksi;
-    private javax.swing.JTable tableMenu;
     private com.toedter.calendar.JDateChooser tanggalValue;
     private javax.swing.JTextField totalHarga;
     private javax.swing.JTextField totalItemsValue;
